@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/beans"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans  
+	http://www.springframework.org/schema/beans/spring-beans.xsd
+	http://www.springframework.org/schema/context
+	http://www.springframework.org/schema/context/spring-context.xsd">
+
+	<!-- Define Beans here -->
+
+	<beans xmlns="<a class=" vglnk "
+		href="http://www.springframework.org/schema/beans" rel="nofollow">
+		<span>http</span>
+		<span>://</span>
+		<span>www</span>
+		<span>.</span>
+		<span>springframework</span>
+		<span>.</span>
+		<span>org</span>
+		<span>/</span>
+		<span>schema</span>
+		<span>/</span>
+		<span>beans</span>
+	</a>
+		"
+		xmlns:xsi="
+		<a class="vglnk" href="http://www.w3.org/2001/XMLSchema-instance"
+			rel="nofollow">
+			<span>http</span>
+			<span>://</span>
+			<span>www</span>
+			<span>.</span>
+			<span>w3</span>
+			<span>.</span>
+			<span>org</span>
+			<span>/</span>
+			<span>2001</span>
+			<span>/</span>
+			<span>XMLSchema</span>
+			<span>-</span>
+			<span>instance</span>
+		</a>
+		"
+		xsi:schemaLocation="
+		<a class="vglnk" href="http://www.springframework.org/schema/beans"
+			rel="nofollow">
+			<span>http</span>
+			<span>://</span>
+			<span>www</span>
+			<span>.</span>
+			<span>springframework</span>
+			<span>.</span>
+			<span>org</span>
+			<span>/</span>
+			<span>schema</span>
+			<span>/</span>
+			<span>beans</span>
+		</a>
+		<a class="vglnk"
+			href="http://www.springframework.org/schema/beans/spring-beans-4.0.xsd"
+			rel="nofollow">
+			<span>http</span>
+			<span>://</span>
+			<span>www</span>
+			<span>.</span>
+			<span>springframework</span>
+			<span>.</span>
+			<span>org</span>
+			<span>/</span>
+			<span>schema</span>
+			<span>/</span>
+			<span>beans</span>
+			<span>/</span>
+			<span>spring</span>
+			<span>-</span>
+			<span>beans</span>
+			<span>-</span>
+			<span>4</span>
+			<span>.</span>
+			<span>0</span>
+			<span>.</span>
+			<span>xsd</span>
+		</a>
+		">
+
+		<bean id="helloWorldBean" class="com.websystique.spring.domain.HelloWorldImpl"> 		
+		<bean id="driver" class="com.sample.project.Driver">
+		
+		<bean id="driver" class="com.sample.project.License">
+		
+		
+		<bean id="license" class="com.websystique.spring.domain.HelloWorldImpl">
+		
+		
+		
+		
+		
+		
+		
+		
+
+	</beans> 
