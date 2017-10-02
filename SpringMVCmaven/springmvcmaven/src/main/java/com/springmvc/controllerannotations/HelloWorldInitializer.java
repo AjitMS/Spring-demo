@@ -10,7 +10,6 @@ import org.springframework.web.servlet.DispatcherServlet;
 
 public class HelloWorldInitializer implements WebApplicationInitializer {
 
-	@Override
 	public void onStartup(ServletContext container) throws ServletException {
 
 		AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
