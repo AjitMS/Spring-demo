@@ -15,7 +15,6 @@ public class FormValidationInitializer implements WebApplicationInitializer {
 		AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
 		context.register(FormValidationConfig.class);
 		context.setServletContext(container);
-
 		ServletRegistration.Dynamic servlet = container.addServlet("dispatcher", new DispatcherServlet(context));
 
 		servlet.setLoadOnStartup(1);

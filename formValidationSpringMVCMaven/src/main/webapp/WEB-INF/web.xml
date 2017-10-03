@@ -5,7 +5,7 @@
 <web-app>
 	<display-name>Archetype Created Web Application</display-name>
 	<welcome-file-list>
-		<welcome-file>enroll.jsp</welcome-file>
-		<welcome-file>register.jsp</welcome-file>
+		<welcome-file></welcome-file>
+		<welcome-file></welcome-file>
 	</welcome-file-list>
 </web-app>

@@ -31,6 +31,7 @@ public class FormValidationConfig {
 		return source;
 	}
 
+	//incase of static resources like css, js.
 	/*
 	 * @Bean public void addResourceHandlers(ResourceHandlerRegistry registry) {
 	 * registry.addResourceHandler("/static/**").addResourceLocations("/static/"); }
