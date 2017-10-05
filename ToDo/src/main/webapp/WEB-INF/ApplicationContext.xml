@@ -12,8 +12,7 @@
         http://www.springframework.org/schema/tx/spring-tx.xsd">
 
 	<!-- Add support for component scanning -->
-	<context:component-scan
-		base-package="com.bridgeit.controller, com.bridgeit.service, com.bridgeit.dao" />
+	<context:component-scan base-package="com.bridgeit.controllers" />
 
 	<!-- Add support for conversion, formatting and validation support -->
 	<mvc:annotation-driven />
@@ -48,10 +47,11 @@
 			<props>
 				<prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
 				<prop key="hibernate.show_sql">true</prop>
+				<!-- Create Table if not exists -->
 			</props>
 		</property>
 	</bean>
-	<!-- Step 3: Setup Hibernate transaction manager -->
+	<!-- Step 3: Setup Hibernate transaction manager <--></-->
 	<bean id="myTransactionManager"
 		class="org.springframework.orm.hibernate5.HibernateTransactionManager">
 		<property name="sessionFactory" ref="sessionFactory" />
@@ -62,5 +62,6 @@
 
 	<!-- Add support for reading web resources: css, images, js, etc ... -->
 	<mvc:resources location="/resources/" mapping="/resources/**"></mvc:resources>
-
+	
+	
 </beans>

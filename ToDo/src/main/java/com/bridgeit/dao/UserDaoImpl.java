@@ -14,6 +14,9 @@ public class UserDaoImpl implements UserDao {
 
 	@Autowired
 	SessionFactory sessionFactory;
+
+	
+	
 	Session session;
 
 	public void registerUser(User user) {
@@ -29,7 +32,7 @@ public class UserDaoImpl implements UserDao {
 			session.save(user);
 
 		} catch (Exception E) {
-			System.out.println(E);
+			E.printStackTrace();
 		}
 
 		finally {
@@ -47,8 +50,8 @@ public class UserDaoImpl implements UserDao {
 		session = (Session) sessionFactory.openSession();
 
 		// authentication logic
-		@SuppressWarnings({ "deprecation", "unchecked" })
-		List<User> userList = session.createCriteria(User.class).list();
+		@SuppressWarnings("unchecked")
+		List<User> userList = session.createQuery("from Student").getResultList();
 		for (User tempUser : userList)
 			if (tempUser.getId().equals(user.getId()))
 				if (tempUser.getPassword().equals(user.getPassword())) {

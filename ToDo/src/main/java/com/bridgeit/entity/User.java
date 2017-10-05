@@ -12,7 +12,6 @@ import javax.persistence.Transient;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Past;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
@@ -25,7 +24,7 @@ public class User {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@NotBlank(message = "*Required")
-	@Size(min = 2, max = 15)
+	@Size(min = 1, max = 3)
 	@NotNull(message = "*Required")
 	@Pattern(regexp = "^[0-9]*$", message = "Invalid Entry")
 	@Column(name = "id")
@@ -55,7 +54,6 @@ public class User {
 	@NotBlank(message = "*Required")
 	@Size(min = 4, max = 6, message = "Invalid Entry")
 	@NotNull(message = "*Required")
-	@Email(message = "Invalid Entry")
 	@Column(name = "gender")
 
 	private String gender;
@@ -63,7 +61,7 @@ public class User {
 	@NotBlank(message = "*Required")
 	@NotNull(message = "*Required")
 	@DateTimeFormat(pattern = "dd/MM/yyyy")
-	@Past(message = "Invalid Entry")
+	//@Past(message = "Invalid Entry")
 	@Temporal(TemporalType.DATE)
 	@Column(name = "dob")
 	private String dob;
@@ -80,7 +78,7 @@ public class User {
 	@Column(name = "password")
 	private String password;
 
-	@NotBlank(message = "*Required")
+	@NotBlank(message = "*Required")	
 	@NotNull(message = "*Required")
 	@Size(min = 4, max = 12, message = "Short Entry")
 	@Transient
