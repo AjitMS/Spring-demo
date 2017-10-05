@@ -26,16 +26,23 @@
 		<!-- <dependency> <groupId>com.fasterxml.jackson.core</groupId> <artifactId>jackson-databind</artifactId> 
 			<version>2.9.0</version> </dependency> -->
 
-		<!-- https://mvnrepository.com/artifact/org.springframework/spring-core/4.3.10.RELEASE -->
-
+		<!-- https://mvnrepository.com/artifact/org.hibernate/hibernate-core/5.2.5.Final -->
 
 
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-core</artifactId>
-			<version>5.2.10.Final</version>
+			<version>5.2.5.Final</version>
 		</dependency>
 
+
+		<!-- https://mvnrepository.com/artifact/org.springframework/spring-orm/4.3.10.RELEASE -->
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-orm</artifactId>
+			<version>4.3.10.RELEASE</version>
+		</dependency>
 
 
 		<dependency>
@@ -97,7 +104,7 @@
 			<version>1.2</version>
 		</dependency>
 
-		<!-- JSTL Depedencies -->
+		<!-- JSTL -->
 
 		<dependency>
 			<groupId>javax.servlet</groupId>
@@ -105,7 +112,7 @@
 			<version>1.2</version>
 		</dependency>
 
-		<!-- Servlet Dependencies -->
+		<!-- Servlet -->
 
 		<dependency>
 			<groupId>javax.servlet</groupId>
@@ -113,7 +120,7 @@
 			<version>3.1.0</version>
 		</dependency>
 
-		<!-- JSP Dependencies -->
+		<!-- JSP -->
 
 		<dependency>
 			<groupId>javax.servlet.jsp</groupId>

@@ -1,6 +1,9 @@
 package com.bridgeit.entity;
 
 import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -15,10 +18,12 @@ import javax.validation.constraints.Size;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
+@Entity
 @Table(name = "user")
 public class User {
 
 	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@NotBlank(message = "*Required")
 	@Size(min = 2, max = 15)
 	@NotNull(message = "*Required")
@@ -81,8 +86,19 @@ public class User {
 	@Transient
 	private String confirmPassword;
 
+	@Column(name = "isValid")
+	private boolean isValid;
+
 	// figure out a way to match both passwords
 	// in annotations using Class level Validator
+
+	public boolean isValid() {
+		return isValid;
+	}
+
+	public void setValid(boolean isValid) {
+		this.isValid = isValid;
+	}
 
 	public String getFirstName() {
 		return firstName;
@@ -189,7 +205,7 @@ public class User {
 	public String toString() {
 		return "User [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", email=" + email
 				+ ", gender=" + gender + ", dob=" + dob + ", phone=" + phone + ", password=" + password
-				+ ", confirmPassword=" + confirmPassword + "]";
+				+ ", confirmPassword=" + confirmPassword + ", isValid=" + isValid + "]";
 	}
 
 }

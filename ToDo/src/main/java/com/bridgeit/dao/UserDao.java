@@ -6,5 +6,5 @@ public interface UserDao {
 
 	public void registerUser(User user);
 
-	public void loginUser(User user);
+	public boolean loginUser(User user);
 }

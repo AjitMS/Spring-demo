@@ -16,7 +16,7 @@ public class HelloWorldController {
 
 	@RequestMapping("/hello/{player}")
 	public Message message(@PathVariable String player) {
-		msg = new Message(player, "Hello !" + player + " !");
+		msg = new Message(player, "Hello " + player + " !");
 		return msg;
 	}
 }
