@@ -16,13 +16,19 @@ import org.springframework.web.bind.annotation.RestController;
 import com.bridgeit.entity.Note;
 import com.bridgeit.service.NoteService;
 
-@RestController("/homepage")
+@RestController("{id}/homepage")
 public class HomeController {
-	
+
 	@Autowired
 	NoteService noteService;
 
-	@GetMapping(value = "/shownote/{id}")
+	@GetMapping("{id}/homepage")//userId
+	public ResponseEntity<String> greetingPage(@PathVariable("id") String id) {
+		System.out.println("Success");	
+		return new ResponseEntity<String>("Email is Registered successfully", HttpStatus.ACCEPTED);
+	}
+
+	@GetMapping(value = "/shownote/{id}")//noteId
 	public ResponseEntity<Note> showNote(@PathVariable("id") String id) {
 		Note note = noteService.getNoteById(id);
 		if (note == null) {
@@ -36,7 +42,7 @@ public class HomeController {
 	@PutMapping(value = "/updatenote/{id}")
 	public ResponseEntity<Note> updateNote(Note updatedNote, @PathVariable("id") String id) {
 		noteService.updateNote(id, updatedNote);
-		
+
 		return new ResponseEntity<Note>(updatedNote, HttpStatus.OK);
 	}
 

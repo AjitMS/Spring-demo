@@ -22,23 +22,14 @@ public class UserDaoImpl implements UserDao {
 
 		// open session
 
-		try {
 			session = sessionFactory.getCurrentSession();
-
-			// store user
-			session.save(user);
-
-		} catch (Exception E) {
-			E.printStackTrace();
-			System.out.println("Save nahi hua");
-		}
-
-		finally {
-			session.close();
-		}
+			// store user	
+			session.save(user);	
+			//session.close();
+			//do not close session. spring does it for us automatically.
 		// no need to beginTransaction, or commit/roll_back manually
 		// let spring handle that for us
-
+		System.out.println("Register successful in DAO");
 		return;
 
 	}

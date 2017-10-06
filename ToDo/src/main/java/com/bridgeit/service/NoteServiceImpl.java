@@ -2,10 +2,12 @@ package com.bridgeit.service;
 
 import java.util.List;
 
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.bridgeit.entity.Note;
 
+@Service("noteService")
 public class NoteServiceImpl implements NoteService {
 
 	@Override

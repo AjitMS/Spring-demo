@@ -6,8 +6,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
@@ -23,10 +21,6 @@ public class User {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@NotBlank(message = "*Required")
-	@Size(min = 1, max = 3)
-	@NotNull(message = "*Required")
-	@Pattern(regexp = "^[0-9]*$", message = "Invalid Entry")
 	@Column(name = "id")
 	private String id;
 
@@ -62,7 +56,6 @@ public class User {
 	@NotNull(message = "*Required")
 	@DateTimeFormat(pattern = "dd/MM/yyyy")
 	// @Past(message = "Invalid Entry")
-	@Temporal(TemporalType.DATE)
 	@Column(name = "dob")
 	private String dob;
 
@@ -74,18 +67,18 @@ public class User {
 
 	@NotBlank(message = "*Required")
 	@NotNull(message = "*Required")
-	@Size(min = 4, max = 12, message = "Short Entry")
+	@Size(min = 4, max = 30, message = "Short Entry")
 	@Column(name = "password")
 	private String password;
 
 	@NotBlank(message = "*Required")
 	@NotNull(message = "*Required")
-	@Size(min = 4, max = 12, message = "Short Entry")
+	@Size(min = 4, max = 30, message = "Short Entry")
 	@Transient
 	private String confirmPassword;
 
-	@Column(name = "isValid")
-	private boolean isValid;
+	@Column(name = "isvalid")
+	private boolean isValid = false;
 
 	// figure out a way to match both passwords
 	// in annotations using Class level Validator
@@ -95,7 +88,7 @@ public class User {
 	}
 
 	public void setValid(boolean isValid) {
-		this.isValid = isValid;
+		this.isValid = isValid;	
 	}
 
 	public String getFirstName() {

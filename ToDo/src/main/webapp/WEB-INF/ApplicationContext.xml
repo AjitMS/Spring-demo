@@ -14,17 +14,15 @@
         http://www.springframework.org/schema/tx/spring-tx.xsd">
 
 	<!-- Add support for component scanning -->
-	<context:component-scan base-package="com.bridgeit.controllers.*" />
+	<context:component-scan base-package="com.bridgeit" />
 
 	<!-- Add support for conversion, formatting and validation support -->
 	<mvc:annotation-driven />
 
 	<!-- Define Spring MVC view resolver -->
-	<!-- <bean
-		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
-		<property name="prefix" value="/WEB-INF/views/" />
-		<property name="suffix" value=".jsp" />
-	</bean> -->
+	<!-- <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver"> 
+		<property name="prefix" value="/WEB-INF/views/" /> <property name="suffix" 
+		value=".jsp" /> </bean> -->
 	<!-- Step 1: Define Database DataSource / connection pool -->
 	<bean id="myDataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource"
 		destroy-method="close">
@@ -44,13 +42,13 @@
 	<bean id="sessionFactory"
 		class="org.springframework.orm.hibernate5.LocalSessionFactoryBean">
 		<property name="dataSource" ref="myDataSource" />
-		<property name="packagesToScan" value="com.bridgeit.ToDo.entity" />
+		<property name="packagesToScan" value="com.bridgeit.entity" />
 		<property name="hibernateProperties">
 			<props>
-				<prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
+				<prop key="hibernate.dialect">org.hibernate.dialect.MySQL5Dialect</prop>
 				<prop key="hibernate.show_sql">true</prop>
 				<!-- Create Table if not exists -->
-				<prop key="hibernate.hbm2ddl.auto">update</prop>				
+				<prop key="hibernate.hbm2ddl.auto">update</prop>
 			</props>
 		</property>
 	</bean>
@@ -65,7 +63,7 @@
 
 	<!-- Add support for reading web resources: css, images, js, etc ... -->
 	<!-- <mvc:resources location="/resources/" mapping="/resources/**"></mvc:resources> -->
-	
+
 	<!-- Step 5: Add beans to enable Email Verification -->
 	<bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
 		<property name="host" value="smtp.gmail.com" />
@@ -80,7 +78,7 @@
 			</props>
 		</property>
 	</bean>
-	
+
 	<bean id="verifyEmail" class="com.bridgeit.emailUtility.EmailVerification">
 		<property name="mailSender" ref="mailSender" />
 	</bean>
