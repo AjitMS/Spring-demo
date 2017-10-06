@@ -61,7 +61,7 @@ public class User {
 	@NotBlank(message = "*Required")
 	@NotNull(message = "*Required")
 	@DateTimeFormat(pattern = "dd/MM/yyyy")
-	//@Past(message = "Invalid Entry")
+	// @Past(message = "Invalid Entry")
 	@Temporal(TemporalType.DATE)
 	@Column(name = "dob")
 	private String dob;
@@ -78,7 +78,7 @@ public class User {
 	@Column(name = "password")
 	private String password;
 
-	@NotBlank(message = "*Required")	
+	@NotBlank(message = "*Required")
 	@NotNull(message = "*Required")
 	@Size(min = 4, max = 12, message = "Short Entry")
 	@Transient

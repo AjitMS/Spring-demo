@@ -14,13 +14,10 @@ public class UserDaoImpl implements UserDao {
 
 	@Autowired
 	SessionFactory sessionFactory;
-
-	
-	
 	Session session;
 
 	public void registerUser(User user) {
-
+		System.out.println("Session Factory: "+sessionFactory);
 		// hibernate code here
 
 		// open session
@@ -33,6 +30,7 @@ public class UserDaoImpl implements UserDao {
 
 		} catch (Exception E) {
 			E.printStackTrace();
+			System.out.println("Save nahi hua");
 		}
 
 		finally {
