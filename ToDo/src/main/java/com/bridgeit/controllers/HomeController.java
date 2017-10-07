@@ -3,7 +3,6 @@ package com.bridgeit.controllers;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -19,7 +18,6 @@ import com.bridgeit.service.NoteService;
 @RestController("{id}/homepage")
 public class HomeController {
 
-	@Autowired
 	NoteService noteService;
 
 	@GetMapping("{id}/homepage")//userId

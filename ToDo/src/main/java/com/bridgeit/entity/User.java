@@ -15,8 +15,12 @@ import javax.validation.constraints.Size;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
+import com.bridgeit.customAnnotation.FieldMatch;
+
 @Entity
 @Table(name = "user")
+@FieldMatch(message = "Passwords do not match")
+//@Component("user")
 public class User {
 
 	@Id
@@ -49,7 +53,6 @@ public class User {
 	@Size(min = 4, max = 6, message = "Invalid Entry")
 	@NotNull(message = "*Required")
 	@Column(name = "gender")
-
 	private String gender;
 
 	@NotBlank(message = "*Required")
@@ -61,6 +64,7 @@ public class User {
 
 	@NotBlank(message = "*Required")
 	@NotNull(message = "*Required")
+	@Size(min = 10, max = 10, message = "Invalid Entry")
 	@Pattern(regexp = "^[0-9]*$", message = "Invalid Entry")
 	@Column(name = "phone")
 	private String phone;
@@ -83,12 +87,12 @@ public class User {
 	// figure out a way to match both passwords
 	// in annotations using Class level Validator
 
-	public boolean isValid() {
+	public boolean getIsValid() {
 		return isValid;
 	}
 
-	public void setValid(boolean isValid) {
-		this.isValid = isValid;	
+	public void setIsValid(boolean isValid) {
+		this.isValid = isValid;
 	}
 
 	public String getFirstName() {
