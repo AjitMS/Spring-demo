@@ -72,7 +72,7 @@
 	<bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
 		<property name="host" value="smtp.gmail.com" />
 		<property name="username" value="ajitshikalgar786@gmail.com" />
-		<property name="password" value="" />
+		<property name="password" value="ajitms786" />
 		<property name="javaMailProperties">
 			<props>
 				<prop key="mail.smtp.auth">true</prop>
@@ -91,18 +91,16 @@
 	<cache:annotation-driven />
 
 	<!-- Jedis ConnectionFactory -->
-	<!-- <bean id="jedisConnectionFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory" 
-		p:host-name="127.0.0.1" p:port="6379"></bean> -->
+	<bean id="jedisConnectionFactory"
+		class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory"
+		p:host-name="127.0.0.1" p:port="6379" p:use-pool="true"></bean>
 
 	<!-- declare Redis Cache template -->
-	<bean id="stringRedisTemplate" class="org.springframework.data.redis.core.StringRedisTemplate"
+	<bean id="redisTemplate" class="org.springframework.data.redis.core.RedisTemplate"
 		p:connection-factory-ref="jedisConnectionFactory"></bean>
 
 	<!-- declare Redis Cache Manager -->
 	<bean id="cacheManager" class="org.springframework.data.redis.cache.RedisCacheManager"
-		c:template-ref="redisTemplate"></bean>
+		c:redis-operations-ref="redisTemplate"></bean>
 
-
-
-
-</beans>	
+</beans>

@@ -1,19 +1,35 @@
-/*package com.bridgeit.controllers;
+package com.bridgeit.controllers;
 
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import javax.annotation.Resource;
 
-@Controller
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.ListOperations;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController("/example")
 public class ExampleController {
 
-	@RequestMapping(value = "/", method = RequestMethod.GET)
-	@ResponseBody
-	@Cacheable("calculateResult")
-	public String calculateResult() {
-		return "result";
+	@Autowired
+	private RedisTemplate<String, String> redisTemplate;
+
+	@Resource(name = "redisTemplate")
+	private ListOperations<String, String> listOps;
+
+	@GetMapping("/example")
+	public void setToken(String userId, String tokenId) {
+		System.out.println("redis Template: " + redisTemplate);
+		listOps = redisTemplate.opsForList();
+		listOps.leftPush(userId, tokenId);
+		System.out.println("Set success");
 	}
+
+	@GetMapping("/gettoken")
+	public String getToken(String userId) {
+		listOps = redisTemplate.opsForList();
+		System.out.println("Get success");
+		return listOps.leftPop(userId);
+	}
+
 }
-*/
