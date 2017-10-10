@@ -1,4 +1,4 @@
-package com.bridgeit.tokenAuthentication;
+package com.bridgeit.entity;
 
 import org.springframework.stereotype.Component;
 

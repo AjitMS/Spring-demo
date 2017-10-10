@@ -1,7 +1,7 @@
 package com.bridgeit.service;
 
+import com.bridgeit.entity.Token;
 import com.bridgeit.entity.User;
-import com.bridgeit.tokenAuthentication.Token;
 
 public interface UserService {
 

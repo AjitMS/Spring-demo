@@ -9,13 +9,14 @@ import org.springframework.data.redis.core.ListOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
+import com.bridgeit.entity.Token;
+
 @Service("/tokenService")
 public class TokenGenerator {
 
 	@Autowired
-	Token token = new Token();
+	Token token;
 
-	
 	@Autowired
 	private RedisTemplate<String, String> redisTemplate;
 
@@ -28,8 +29,10 @@ public class TokenGenerator {
 		String randomUUID = uuid.toString().replaceAll("-", "");
 		System.out.println("Random UUID is: " + randomUUID);
 		token.setTokenId(randomUUID);
-		/*ExampleController ex = new ExampleController();
-		ex.setToken(userId, randomUUID);*/
+		/*
+		 * ExampleController ex = new ExampleController(); ex.setToken(userId,
+		 * randomUUID);
+		 */
 		// saving same token for userId into Redis
 		System.out.println("id: " + userId + "value: " + token.getTokenId());
 		System.out.println("redis Template: " + redisTemplate);
@@ -39,17 +42,16 @@ public class TokenGenerator {
 	}
 
 	public boolean verifyUserToken(String userId, String userTokenId) {
-		//ExampleController ex = new ExampleController();
+		// ExampleController ex = new ExampleController();
 		String value = listOps.leftPop(userId);
-		System.out.println("user token: "+userTokenId);
-		System.out.println("Redis stored token: "+value);
+		System.out.println("user token: " + userTokenId);
+		System.out.println("Redis stored token: " + value);
 		System.out.println("Get success");
 		if (value.equals(userTokenId))
 			return true;
-		
-		//if(ex.getToken(userId).equals(userTokenId))
+
+		// if(ex.getToken(userId).equals(userTokenId))
 		return false;
 	}
 
 }
-		

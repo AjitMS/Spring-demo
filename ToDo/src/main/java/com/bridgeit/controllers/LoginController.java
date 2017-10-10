@@ -5,11 +5,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.bridgeit.entity.Token;
 import com.bridgeit.entity.User;
+import com.bridgeit.entity.UserLoginPair;
 import com.bridgeit.service.UserService;
-import com.bridgeit.tokenAuthentication.Token;
 import com.bridgeit.tokenAuthentication.TokenGenerator;
 
 @RestController("/login")
@@ -19,11 +21,14 @@ public class LoginController {
 	UserService userService;
 	User user;
 	@Autowired
-	TokenGenerator generator ;
+	TokenGenerator generator;
 
-	@GetMapping("/login")
-	public ResponseEntity<String> loginUser(String email, String password) {
+	@PostMapping("/login")
+	public ResponseEntity<String> loginUser(UserLoginPair loginPair) {
+
 		System.out.println("Into Login");
+		String email = loginPair.getEmail();
+		String password = loginPair.getPassword();
 		try {
 			user = userService.getUserByEmail(email, user);
 			user.setPassword(password);
@@ -33,7 +38,7 @@ public class LoginController {
 		}
 
 		if (userService.loginUser(user)) {
-//			//TokenGenerator generator = new TokenGenerator();
+			// //TokenGenerator generator = new TokenGenerator();
 			Token token = generator.generateToken(user.getId());
 			userService.verifyLoggedInUser(user, token);
 			return new ResponseEntity<String>("Login Token Sent. check Email", HttpStatus.OK);

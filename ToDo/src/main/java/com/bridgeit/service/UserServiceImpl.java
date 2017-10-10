@@ -6,8 +6,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.bridgeit.dao.UserDao;
 import com.bridgeit.emailUtility.EmailVerification;
+import com.bridgeit.entity.Token;
 import com.bridgeit.entity.User;
-import com.bridgeit.tokenAuthentication.Token;
 
 /**
  * @author Ajit Shikalgar
