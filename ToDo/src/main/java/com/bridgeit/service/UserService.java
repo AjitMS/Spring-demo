@@ -9,11 +9,14 @@ public interface UserService {
 
 	public boolean loginUser(User user);
 
-	public void sendVerificationLink(String firstName, String email);
-	
-	public void validateRegisteredUser(String id);
-	
-	public void verifyLoggedInUser(User user, Token token);
-	
+	public boolean userExists(User user);
+
 	public User getUserByEmail(String email, User user);
+
+	public void validateRegisteredUser(String id);
+
+	public void sendRegistrationVerificationLink(String firstName, String email);
+
+	public void sendLoginVerificationToken(User user, Token token);
+
 }

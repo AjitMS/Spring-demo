@@ -5,6 +5,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.validation.constraints.Email;
@@ -83,12 +84,27 @@ public class User {
 
 	@Column(name = "isvalid")
 	private boolean isValid = false;
-
-	// figure out a way to match both passwords
+	
+	@OneToOne
+	private Token token;
+	
+	// figured out a way to match both passwords
 	// in annotations using Class level Validator
 
 	public boolean getIsValid() {
 		return isValid;
+	}
+
+	public Token getToken() {
+		return token;
+	}
+
+	public void setToken(Token token) {
+		this.token = token;
+	}
+
+	public void setValid(boolean isValid) {
+		this.isValid = isValid;
 	}
 
 	public void setIsValid(boolean isValid) {
@@ -200,7 +216,7 @@ public class User {
 	public String toString() {
 		return "User [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", email=" + email
 				+ ", gender=" + gender + ", dob=" + dob + ", phone=" + phone + ", password=" + password
-				+ ", confirmPassword=" + confirmPassword + ", isValid=" + isValid + "]";
+				+ ", confirmPassword=" + confirmPassword + ", isValid=" + isValid + ", token=" + token + "]";
 	}
 
 }

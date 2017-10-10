@@ -50,6 +50,19 @@ public class UserServiceImpl implements UserService {
 
 	}
 
+	@Override
+	public User getUserByEmail(String email, User user) {
+		user = dao.getUserByEmail(email, user);
+		return user;
+	}
+
+	@Override
+	public boolean userExists(User user) {
+		if(dao.userExists(user))
+		return true;
+		return false;
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -71,7 +84,7 @@ public class UserServiceImpl implements UserService {
 	 * mandatory step to verify mail of user attempting to register
 	 */
 	@Override
-	public void sendVerificationLink(String id, String email) {
+	public void sendRegistrationVerificationLink(String id, String email) {
 
 		String link = "http://localhost:8080/ToDo/register/verifyuser/" + id;
 		verifyEmail.sendMail("bridgeit@gmail.com", email, "Confirm Registration", link);
@@ -89,18 +102,12 @@ public class UserServiceImpl implements UserService {
 	 * mail, user is redirected to home page after both tokens match.
 	 */
 	@Override
-	public void verifyLoggedInUser(User user, Token token) {
+	public void sendLoginVerificationToken(User user, Token token) {
 		String subject = "Bridgelabz Secure Login Link";
 		String link = "localhost:8080/ToDo/login/" + user.getId() + "/" + token.getTokenId();
 		String msg = "Dear " + user.getFirstName() + ", Login from below secure link\n" + link + "";
 		verifyEmail.sendMail("bridgeit@gmail.com", user.getEmail(), subject, msg);
 
-	}
-
-	@Override
-	public User getUserByEmail(String email, User user) {
-		user = dao.getUserByEmail(email, user);
-		return user;
 	}
 
 }

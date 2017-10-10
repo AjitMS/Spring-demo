@@ -100,7 +100,7 @@
 		p:connection-factory-ref="jedisConnectionFactory"></bean>
 
 	<!-- declare Redis Cache Manager -->
-	<bean id="cacheManager" class="org.springframework.data.redis.cache.RedisCacheManager"
+	 <bean id="cacheManager" class="org.springframework.data.redis.cache.RedisCacheManager"
 		c:redis-operations-ref="redisTemplate"></bean>
 
 </beans>

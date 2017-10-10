@@ -8,6 +8,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.bridgeit.entity.User;
@@ -19,8 +21,8 @@ public class RegisterController {
 	@Autowired
 	UserService userService;
 
-	@GetMapping("/register")
-	public ResponseEntity<String> registerUser(@Valid User user, BindingResult bindingResult) {
+	@PostMapping("/register")
+	public ResponseEntity<String> registerUser(@RequestBody @Valid User user, BindingResult bindingResult) {
 		System.out.println("WOOHOO !");
 		if (bindingResult.hasErrors()) {
 			System.out.println("Errors are: " + bindingResult);
@@ -29,14 +31,18 @@ public class RegisterController {
 		}
 		System.out.println("User details: " + user);
 
-		// saving user
-
-		userService.registerUser(user);
-		System.out.println("Register Success");
+		// saving user if not exists
+		if (!userService.userExists(user)) {
+			userService.registerUser(user);
+			System.out.println("Register Success");
+		} else {
+			return new ResponseEntity<String>("User Exists, please login. or forgot password ?",
+					HttpStatus.NOT_ACCEPTABLE);
+		}
 
 		// Email verification
 
-		userService.sendVerificationLink(user.getId(), user.getEmail());
+		userService.sendRegistrationVerificationLink(user.getId(), user.getEmail());
 
 		String greeting = "Thank you! \n A verification email has been sent to " + user.getEmail()
 				+ ". confirm registration by accessing link in the mail";

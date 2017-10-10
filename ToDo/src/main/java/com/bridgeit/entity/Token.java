@@ -1,10 +1,15 @@
 package com.bridgeit.entity;
 
+import javax.persistence.Entity;
+import javax.persistence.Id;
+
 import org.springframework.stereotype.Component;
 
 @Component("token")
+@Entity
 public class Token {
-
+	
+	@Id
 	private String tokenId;
 
 	public String getTokenId() {

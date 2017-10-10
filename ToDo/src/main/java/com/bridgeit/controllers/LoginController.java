@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.bridgeit.entity.Token;
@@ -24,23 +25,30 @@ public class LoginController {
 	TokenGenerator generator;
 
 	@PostMapping("/login")
-	public ResponseEntity<String> loginUser(UserLoginPair loginPair) {
-
+	public ResponseEntity<String> loginUser(@RequestBody UserLoginPair loginPair) {
+		System.out.println("userLogin pair is: " + loginPair);
 		System.out.println("Into Login");
 		String email = loginPair.getEmail();
 		String password = loginPair.getPassword();
+		
+		//grab entire user by email
 		try {
 			user = userService.getUserByEmail(email, user);
 			user.setPassword(password);
-		} catch (Exception E) {
+		} catch (Exception E) {	
 			System.out.println("Empty Credentials");
 			return new ResponseEntity<String>("Login Failure", HttpStatus.NO_CONTENT);
 		}
 
 		if (userService.loginUser(user)) {
-			// //TokenGenerator generator = new TokenGenerator();
-			Token token = generator.generateToken(user.getId());
-			userService.verifyLoggedInUser(user, token);
+			 //TokenGenerator generator = new TokenGenerator();
+			//stop making objects. instead use @Autowired
+			
+			//generate token for specific user id and store it in REDIS
+			Token token = generator.generateToken(user);
+			
+			//send token link to user email
+			userService.sendLoginVerificationToken(user, token);
 			return new ResponseEntity<String>("Login Token Sent. check Email", HttpStatus.OK);
 		}
 		return new ResponseEntity<String>("Login Failure", HttpStatus.NO_CONTENT);

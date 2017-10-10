@@ -10,6 +10,8 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import com.bridgeit.entity.Token;
+import com.bridgeit.entity.User;
+import com.bridgeit.service.UserService;
 
 @Service("/tokenService")
 public class TokenGenerator {
@@ -19,11 +21,14 @@ public class TokenGenerator {
 
 	@Autowired
 	private RedisTemplate<String, String> redisTemplate;
+	
+	@Autowired
+	private UserService service;
 
 	@Resource(name = "redisTemplate")
 	private ListOperations<String, String> listOps;
 
-	public Token generateToken(String userId) {
+	public Token generateToken(User user) {
 
 		UUID uuid = UUID.randomUUID();
 		String randomUUID = uuid.toString().replaceAll("-", "");
@@ -34,10 +39,16 @@ public class TokenGenerator {
 		 * randomUUID);
 		 */
 		// saving same token for userId into Redis
-		System.out.println("id: " + userId + "value: " + token.getTokenId());
+		System.out.println("id: " + user.getId() + "value: " + token.getTokenId());
 		System.out.println("redis Template: " + redisTemplate);
-		listOps.leftPush(userId, token.getTokenId());
-		System.out.println("Token " + token.getTokenId() + " Set successfully for user: " + userId);
+		// push into redis
+		listOps.leftPush(user.getId(), token.getTokenId());
+
+		// push into MySQL DB
+		user.setToken(token);
+		service.loginUser(user);
+		
+		System.out.println("Token " + token.getTokenId() + " Set successfully for user: " + user.getId());
 		return token;
 	}
 

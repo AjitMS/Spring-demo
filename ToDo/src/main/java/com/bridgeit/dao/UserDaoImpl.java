@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -74,8 +75,12 @@ public class UserDaoImpl implements UserDao {
 	public User getUserByEmail(String email, User user) {
 		Session session = sessionFactory.openSession();
 		List<User> userList = new ArrayList<>();
+		// jpa
+		/*
+		 * CriteriaBuilder builder = session.getCriteriaBuilder(); CriteriaQuery<User>
+		 * criteria = builder.createQuery(User.class);
+		 */
 		userList = session.createQuery("from User").getResultList();
-
 		for (User tempUser : userList)
 			if (tempUser.getEmail().equalsIgnoreCase(email)) {
 				user = tempUser;
@@ -85,4 +90,17 @@ public class UserDaoImpl implements UserDao {
 		return user;
 	}
 
+	List<User> userList;
+
+	@Override
+	public boolean userExists(User user) {
+		Session session = sessionFactory.openSession();
+		@SuppressWarnings({ "unchecked", "deprecation" })
+		List<User> userList = session.createCriteria(User.class).add(Restrictions.eq("email", user.getEmail())).list();
+		if (userList.size() == 0) {
+			return false;
+		}
+
+		return true;
+	}
 }
