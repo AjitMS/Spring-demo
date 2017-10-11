@@ -1,5 +1,7 @@
 package com.bridgeit.service;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,8 +43,8 @@ public class UserServiceImpl implements UserService {
 	 * logging user by authenticating email, password at service level
 	 */
 	@Transactional
-	public boolean loginUser(User user) {
-		if (dao.loginUser(user)) {
+	public boolean loginUser(String email, String password) {
+		if (dao.loginUser(email, password)) {
 			System.out.println("Login Success");
 			return true;
 		}
@@ -58,8 +60,8 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public boolean userExists(User user) {
-		if(dao.userExists(user))
-		return true;
+		if (dao.userExists(user))
+			return true;
 		return false;
 	}
 
@@ -102,10 +104,23 @@ public class UserServiceImpl implements UserService {
 	 * mail, user is redirected to home page after both tokens match.
 	 */
 	@Override
-	public void sendLoginVerificationToken(User user, Token token) {
+	public void sendLoginVerificationToken(User user, Token token, HttpServletRequest request) {
 		String subject = "Bridgelabz Secure Login Link";
-		String link = "localhost:8080/ToDo/login/" + user.getId() + "/" + token.getTokenId();
+		String link = request.getServerName() + ":" + request.getServerPort() + request.getContextPath()
+				+ request.getServletPath() + user.getId() + "/" + token.getTokenId();
+		System.out.println("link is: " + link);
 		String msg = "Dear " + user.getFirstName() + ", Login from below secure link\n" + link + "";
+		verifyEmail.sendMail("bridgeit@gmail.com", user.getEmail(), subject, msg);
+
+	}
+
+	@Override
+	public void resetPassword(User user, HttpServletRequest request) {
+
+		String subject = "Bridgelabz Secure Login Link";
+		String link = request.getServerName() + ":" + request.getServerPort() + request.getContextPath()
+		+ request.getServletPath() + user.getId();
+		String msg = "Dear " + user.getFirstName() + ", Access below link to reset password\n" + link + "";
 		verifyEmail.sendMail("bridgeit@gmail.com", user.getEmail(), subject, msg);
 
 	}

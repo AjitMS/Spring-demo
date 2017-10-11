@@ -46,11 +46,11 @@ public class UserDaoImpl implements UserDao {
 		System.out.println("isvalid finally: " + user.getIsValid());
 	}
 
-	public boolean loginUser(User user) {
+	public boolean loginUser(String email, String password) {
 		Session session;
 		session = (Session) sessionFactory.openSession();
 
-		if (user == null) {
+		if (email == null || password == null) {
 			System.out.println("Empty Credentials");
 			return false;
 		}
@@ -60,10 +60,8 @@ public class UserDaoImpl implements UserDao {
 		List<User> userList = session.createQuery("from User").getResultList();
 
 		for (User tempUser : userList)
-			if (tempUser.getEmail().equals(user.getEmail())) {
-				System.out.println("db email: " + tempUser.getEmail() + " user email: " + user.getEmail());
-				if (tempUser.getPassword().equals(user.getPassword())) {
-					System.out.println("db pass: " + tempUser.getPassword() + " user pass: " + user.getPassword());
+			if (tempUser.getEmail().equals(email)) {
+				if (tempUser.getPassword().equals(password)) {
 					return true;
 				}
 			}

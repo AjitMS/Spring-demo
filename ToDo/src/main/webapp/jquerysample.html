@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>Library Register</title>
+
+<!-- Bootstrap References -->
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css"
+	integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M"
+	crossorigin="anonymous">
+
+<title>JQuery Sample</title>
+
+<style>
+
+h1.myclickbutton{
+    background: blue;
+    color:antiquewhite;
+}
+
+.btn{
+    font-size: 16px;
+}
+
+</style>
+
+</head>
+<body>
+    <div class="container">
+
+<div id="mybutton" class= "btn btn-primary" >Javascript!</div>
+<div id="mybutton1" class= "btn btn-danger" >JQuery!</div>
+<div class="row">
+<div class="col-md-6"><h1 class="myclickbutton">Text Heading</h1>
+<a href="google.com"></a>
+    <p>some text here in div1</p>
+    <p>some more text in div1</p>
+</div>
+
+<div class="col-md-6"><h1>Another text</h1>
+<p>and some more here in div2</p>
+</div>
+</div>
+<div id="btncontent" class="btn btn-success">Click me to bring another page here thru' AJAX</div>
+
+<div id="output">OUTPUT</div>
+
+<!-- <div class="container">
+
+    Enter something worthy : <input type="text" id="worthy" name="worthy"/> <br>
+    We'll see if its worthy ;) : <input type="checkbox" id="indicator" name="indicator"/>
+
+</div> -->
+
+
+    </div>
+
+	<script
+		src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    
+		<script>
+            
+            //using jquery
+            
+
+
+            $(document).ready(function(){
+                
+
+                    $('#btncontent').click(function(){
+                        $('#output').load('temp.html');
+                    });                      
+                });
+            
+               // $('div:not(.col-md-6)').click(function(){// not is self explanatory
+
+                //$('div >  *').click(function(){    //using class .btn instead of id alaso can be used using css class or id.
+                //div > * means all child elements under parent div will get jquery funtion
+                // var paragraph = $('p');
+                // console.log(paragraph); 
+                // for(x=0; x<paragraph.length; x++)
+                // console.log(paragraph[x].innerHTML);
+
+
+            //     $('.btn').click(function(){
+            //          console.log('clicked !!!')
+            //      });
+            //     $(document).ready(function(){
+            //         $('.btn').mouseenter(function(){
+            //             console.log('hover image');
+            //         });
+           
+            // });
+
+
+            //multiple events for single btn class
+            // $('.btn').on({
+            //     "click": console.log('clicked !'),
+            //     "mouseover": console.log('Hovered !')
+                // });
+
+
+                //realtime "worth" checker
+            //     $(document).ready(function(){ 
+            //     $('#worthy').change(function(){
+            //         console.log($(this));
+            //         console.log($(this).val());
+            //         console.log()
+            //         if($(this).val() == 'worthy')
+            //             $('#indicator').prop("checked", true);
+            //             else
+            //             $('#indicator').prop("checked", false);
+            //     });
+            // });      
+
+
+        </script>
+
+</body>
+</html>
