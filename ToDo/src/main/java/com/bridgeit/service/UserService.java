@@ -21,6 +21,8 @@ public interface UserService {
 
 	public void sendLoginVerificationToken(User user, Token token, HttpServletRequest request);
 
-	public void resetPassword(User user, HttpServletRequest request);
+	public void sendResetPassword(User user, HttpServletRequest request, Token token);
+
+	public void resetPassword(String email, String password);
 
 }

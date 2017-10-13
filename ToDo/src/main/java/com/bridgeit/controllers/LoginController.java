@@ -28,9 +28,6 @@ public class LoginController {
 
 	@PostMapping("/login")
 	public ResponseEntity<String> loginUser(@RequestBody UserLoginPair loginPair, HttpServletRequest request) {
-		System.out.println("userLogin pair is: " + loginPair);
-		System.out.println("Request path is: " + request.getContextPath());
-		System.out.println("servername: " + request.getServerName() + "server port " + request.getServerPort());
 		System.out.println("Into Login");
 		String email = loginPair.getEmail();
 		String password = loginPair.getPassword();
@@ -66,17 +63,45 @@ public class LoginController {
 
 	}
 
-	@GetMapping("login/{userid}/forgotpassword")
-	public ResponseEntity<String> resetPassword(@PathVariable("userid") String userid, String email,
-			HttpServletRequest request) {
-		user = userService.getUserByEmail(email, user);
+	@PostMapping("/login/forgotpassword")
+	public ResponseEntity<String> forgotPassword(@RequestBody User user, HttpServletRequest request) {
+		try {
+			user = userService.getUserByEmail(user.getEmail(), user);
+			System.out.println("email is: " + user.getEmail());
+			System.out.println("user is: " + user);
+		} catch (Exception E) {
+			E.printStackTrace();
+		}
 		if (user == null) {
 			System.out.println("No such email registered");
 			return new ResponseEntity<String>("No such email registered", HttpStatus.NO_CONTENT);
 		}
-		userService.resetPassword(user, request);
+		// generating user token for forgot password
+		// generator is autowired
+		Token token = generator.generateToken(user);
+		userService.sendResetPassword(user, request, token);
 
-		return new ResponseEntity<String>("reset password link has been sent to " + email, HttpStatus.ACCEPTED);
+		return new ResponseEntity<String>("reset password link has been sent to " + user.getEmail(),
+				HttpStatus.ACCEPTED);
+	}
+
+	@PostMapping("/login/resetpasswordtoken/{userId}/{userTokenId}")
+	public ResponseEntity<String> resetPasswordToken(@PathVariable("userId") String userId,
+			@PathVariable("userTokenId") String userTokenId) {
+		if (generator.verifyUserToken(userId, userTokenId))
+			return new ResponseEntity<String>("", HttpStatus.OK);
+		return new ResponseEntity<String>("", HttpStatus.NO_CONTENT);
+	}
+
+	@PostMapping("/login/resetpassword")
+	public ResponseEntity<String> resetPassword(@RequestBody User user) {
+
+		if (user.getPassword().equals(user.getConfirmPassword())) {
+			userService.resetPassword(user.getEmail(), user.getPassword());
+			return new ResponseEntity<String>("Success ! proceding to Login...", HttpStatus.OK);
+
+		}
+		return new ResponseEntity<>("passwords do not match", HttpStatus.NO_CONTENT);
 	}
 
 }

@@ -17,7 +17,6 @@ public class TokenGenerator {
 	@Autowired
 	Token token;
 
-
 	@Resource(name = "redisTemplate")
 	private ListOperations<String, String> listOps;
 

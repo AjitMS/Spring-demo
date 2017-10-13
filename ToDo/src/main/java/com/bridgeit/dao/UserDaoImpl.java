@@ -71,6 +71,7 @@ public class UserDaoImpl implements UserDao {
 	@SuppressWarnings({ "unchecked" })
 	@Override
 	public User getUserByEmail(String email, User user) {
+		System.out.println("reached in getUserByEmail successfully");
 		Session session = sessionFactory.openSession();
 		List<User> userList = new ArrayList<>();
 		// jpa
@@ -79,11 +80,13 @@ public class UserDaoImpl implements UserDao {
 		 * criteria = builder.createQuery(User.class);
 		 */
 		userList = session.createQuery("from User").getResultList();
-		for (User tempUser : userList)
+		for (User tempUser : userList) {
+			System.out.println(tempUser.getEmail() + " vs " + email);
 			if (tempUser.getEmail().equalsIgnoreCase(email)) {
 				user = tempUser;
 				return user;
 			}
+		}
 
 		return user;
 	}
@@ -100,5 +103,17 @@ public class UserDaoImpl implements UserDao {
 		}
 
 		return true;
+	}
+
+	@Override
+	public void resetPassword(String email, String password) {
+		Session session = sessionFactory.openSession();
+		@SuppressWarnings({ "deprecation", "unchecked" })
+		List<User> userList = session.createCriteria(User.class).add(Restrictions.eq("email", email)).list();
+		for (User tempUser : userList) {
+			tempUser.setPassword(password);
+			tempUser.setConfirmPassword(password);
+		}
+		return;
 	}
 }

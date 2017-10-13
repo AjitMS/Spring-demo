@@ -29,6 +29,7 @@ public class UserServiceImpl implements UserService {
 	 * @see com.bridgeit.service.UserService#registerUser(com.bridgeit.entity.User)
 	 * registering user at service level
 	 */
+	@Override
 	@Transactional
 	public void registerUser(User user) {
 
@@ -53,12 +54,14 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
+	@Transactional
 	public User getUserByEmail(String email, User user) {
 		user = dao.getUserByEmail(email, user);
 		return user;
 	}
 
 	@Override
+	@Transactional
 	public boolean userExists(User user) {
 		if (dao.userExists(user))
 			return true;
@@ -115,14 +118,21 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public void resetPassword(User user, HttpServletRequest request) {
+	public void sendResetPassword(User user, HttpServletRequest request, Token token) {
 
 		String subject = "Bridgelabz Secure Login Link";
 		String link = request.getServerName() + ":" + request.getServerPort() + request.getContextPath()
-		+ request.getServletPath() + user.getId();
+				+ "/login/resetpasswordtoken/" + user.getId() + "/" + token.getTokenId();
 		String msg = "Dear " + user.getFirstName() + ", Access below link to reset password\n" + link + "";
 		verifyEmail.sendMail("bridgeit@gmail.com", user.getEmail(), subject, msg);
 
+	}
+
+	@Override
+	@Transactional
+	public void resetPassword(String email, String password) {
+		dao.resetPassword(email, password);
+		return;
 	}
 
 }
