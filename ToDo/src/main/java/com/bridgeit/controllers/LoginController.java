@@ -29,11 +29,13 @@ public class LoginController {
 	@PostMapping("/login")
 	public ResponseEntity<String> loginUser(@RequestBody UserLoginPair loginPair, HttpServletRequest request) {
 		System.out.println("Into Login");
+		System.out.println("loign pair is: "+loginPair);
 		String email = loginPair.getEmail();
 		String password = loginPair.getPassword();
 		// grab entire user by email if proper credentials
 
 		if (userService.loginUser(email, password)) {
+			System.out.println("loginn success");
 			user = userService.getUserByEmail(email, user);
 
 			// TokenGenerator generator = new TokenGenerator();
@@ -43,17 +45,19 @@ public class LoginController {
 			// generate token for specific user id and store it in REDIS
 
 			Token token = generator.generateToken(user);
+			generator.pushIntoRedis(user, token, "accesstoken");
 
 			// send token link to user email
-
+			
 			userService.sendLoginVerificationToken(user, token, request);
 			return new ResponseEntity<String>("Login Token Sent. check Email", HttpStatus.OK);
 		}
+		System.out.println("Login failed");
 		return new ResponseEntity<String>("Login Failure", HttpStatus.NO_CONTENT);
 	}
 
 	@GetMapping("/login/{userId}/{tokenId}")
-	public ResponseEntity<String> verifyUserToken(@PathVariable("userId") String userId,
+	public ResponseEntity<String> verifyUserToken(@PathVariable("userId") Integer userId,
 			@PathVariable("tokenId") String userTokenId) {
 		if (generator.verifyUserToken(userId, userTokenId)) {
 			System.out.println("Congratulations !");
@@ -79,18 +83,19 @@ public class LoginController {
 		// generating user token for forgot password
 		// generator is autowired
 		Token token = generator.generateToken(user);
-		userService.sendResetPassword(user, request, token);
+		userService.sendResetPasswordMail(user, request, token);
 
 		return new ResponseEntity<String>("reset password link has been sent to " + user.getEmail(),
 				HttpStatus.ACCEPTED);
 	}
 
-	@PostMapping("/login/resetpasswordtoken/{userId}/{userTokenId}")
-	public ResponseEntity<String> resetPasswordToken(@PathVariable("userId") String userId,
+	@GetMapping("/login/resetpasswordtoken/{userId}/{userTokenId}")
+	public ResponseEntity<String> validateResetPasswordToken(@PathVariable("userId") Integer userId,
 			@PathVariable("userTokenId") String userTokenId) {
 		if (generator.verifyUserToken(userId, userTokenId))
-			return new ResponseEntity<String>("", HttpStatus.OK);
-		return new ResponseEntity<String>("", HttpStatus.NO_CONTENT);
+			return new ResponseEntity<String>("Redirecting to the password resetting page..",
+					HttpStatus.OK);
+		return new ResponseEntity<String>("Invalid link or incorrect token. password resetting failed. try again", HttpStatus.NO_CONTENT);
 	}
 
 	@PostMapping("/login/resetpassword")
@@ -98,7 +103,7 @@ public class LoginController {
 
 		if (user.getPassword().equals(user.getConfirmPassword())) {
 			userService.resetPassword(user.getEmail(), user.getPassword());
-			return new ResponseEntity<String>("Success ! proceding to Login...", HttpStatus.OK);
+			return new ResponseEntity<String>("Success ! proceding to Log In...", HttpStatus.OK);
 
 		}
 		return new ResponseEntity<>("passwords do not match", HttpStatus.NO_CONTENT);

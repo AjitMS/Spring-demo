@@ -15,13 +15,13 @@ public interface UserService {
 
 	public User getUserByEmail(String email, User user);
 
-	public void validateRegisteredUser(String id);
+	public void validateRegisteredUser(Integer id);
 
-	public void sendRegistrationVerificationLink(String firstName, String email);
+	public void sendRegistrationVerificationLink(Integer id, String email);
 
 	public void sendLoginVerificationToken(User user, Token token, HttpServletRequest request);
 
-	public void sendResetPassword(User user, HttpServletRequest request, Token token);
+	public void sendResetPasswordMail(User user, HttpServletRequest request, Token token);
 
 	public void resetPassword(String email, String password);
 

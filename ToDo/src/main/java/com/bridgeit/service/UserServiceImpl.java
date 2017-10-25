@@ -77,7 +77,7 @@ public class UserServiceImpl implements UserService {
 	 * from '0'
 	 */
 	@Transactional
-	public void validateRegisteredUser(String id) {
+	public void validateRegisteredUser(Integer id) {
 		dao.validateRegisteredUser(id);
 	}
 
@@ -89,7 +89,7 @@ public class UserServiceImpl implements UserService {
 	 * mandatory step to verify mail of user attempting to register
 	 */
 	@Override
-	public void sendRegistrationVerificationLink(String id, String email) {
+	public void sendRegistrationVerificationLink(Integer id, String email) {
 
 		String link = "http://localhost:8080/ToDo/register/verifyuser/" + id;
 		verifyEmail.sendMail("bridgeit@gmail.com", email, "Confirm Registration", link);
@@ -110,7 +110,7 @@ public class UserServiceImpl implements UserService {
 	public void sendLoginVerificationToken(User user, Token token, HttpServletRequest request) {
 		String subject = "Bridgelabz Secure Login Link";
 		String link = request.getServerName() + ":" + request.getServerPort() + request.getContextPath()
-				+ request.getServletPath() + user.getId() + "/" + token.getTokenId();
+				+ request.getServletPath() + user.getId() + "/" + token.getTokenValue();
 		System.out.println("link is: " + link);
 		String msg = "Dear " + user.getFirstName() + ", Login from below secure link\n" + link + "";
 		verifyEmail.sendMail("bridgeit@gmail.com", user.getEmail(), subject, msg);
@@ -118,11 +118,11 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public void sendResetPassword(User user, HttpServletRequest request, Token token) {
+	public void sendResetPasswordMail(User user, HttpServletRequest request, Token token) {
 
 		String subject = "Bridgelabz Secure Login Link";
 		String link = request.getServerName() + ":" + request.getServerPort() + request.getContextPath()
-				+ "/login/resetpasswordtoken/" + user.getId() + "/" + token.getTokenId();
+				+ "/login/resetpasswordtoken/" + user.getId() + "/" + token.getTokenValue();
 		String msg = "Dear " + user.getFirstName() + ", Access below link to reset password\n" + link + "";
 		verifyEmail.sendMail("bridgeit@gmail.com", user.getEmail(), subject, msg);
 

@@ -32,7 +32,7 @@
 		destroy-method="close">
 		<property name="driverClass" value="com.mysql.jdbc.Driver" />
 		<property name="jdbcUrl"
-			value="jdbc:mysql://localhost:3306/ToDo_users?useSSL=false" />
+			value="jdbc:mysql://localhost:3306/ToDoUsers?useSSL=false" />
 		<property name="user" value="root" />
 		<property name="password" value="root" />
 

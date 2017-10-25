@@ -51,7 +51,7 @@ public class RegisterController {
 	}
 
 	@GetMapping("/register/verifyuser/{id}")
-	public ResponseEntity<String> verifyRegisteredUser(@PathVariable("id") String id) {
+	public ResponseEntity<String> verifyRegisteredUser(@PathVariable("id") Integer id) {
 		userService.validateRegisteredUser(id);
 		System.out.println("User verified successfully !");
 		return new ResponseEntity<String>("Verified Successfully ! Redirecting to homepage...", HttpStatus.ACCEPTED);

@@ -36,7 +36,7 @@ public class UserDaoImpl implements UserDao {
 
 	}
 
-	public void validateRegisteredUser(String id) {
+	public void validateRegisteredUser(Integer id) {
 		User user;
 		Session session = sessionFactory.openSession();
 		user = session.get(User.class, id);
@@ -110,10 +110,11 @@ public class UserDaoImpl implements UserDao {
 		Session session = sessionFactory.openSession();
 		@SuppressWarnings({ "deprecation", "unchecked" })
 		List<User> userList = session.createCriteria(User.class).add(Restrictions.eq("email", email)).list();
-		for (User tempUser : userList) {
-			tempUser.setPassword(password);
-			tempUser.setConfirmPassword(password);
-		}
-		return;
+		User user = userList.get(0);
+		System.out.println("user old password: "+user.getPassword());
+		user.setPassword(password);
+		session.saveOrUpdate(user);
+		System.out.println("user new password: "+user.getPassword());
+
 	}
 }

@@ -1,36 +1,42 @@
 package com.bridgeit.entity;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-
 import org.springframework.stereotype.Component;
 
 @Component("token")
-@Entity
 public class Token {
-	
-	@Id
-	private String tokenId;
 
-	public String getTokenId() {
-		return tokenId;
+	private Integer userId;
+	private String tokenType;
+
+
+	public String getTokenType() {
+		return tokenType;
 	}
 
-	public void setTokenId(String tokenId) {
-		this.tokenId = tokenId;
-	}
-
-	public Token(String tokenId) {
-		this.tokenId = tokenId;
-	}
-
-	public Token() {
-		tokenId = null;
+	public void setTokenType(String tokenType) {
+		this.tokenType = tokenType;
 	}
 
 	@Override
 	public String toString() {
-		return "Token [tokenId=" + tokenId + "]";
+		return "Token [userId=" + userId + ", tokenType=" + tokenType + "]";
+	}
+
+	public Integer getUserId() {
+		return userId;
+	}
+
+	public void setUserId(Integer userId) {
+		this.userId = userId;
+	}
+
+	public Token() {
+
+	}
+
+	public Token(Integer userId) {
+		super();
+		this.userId = userId;
 	}
 
 }

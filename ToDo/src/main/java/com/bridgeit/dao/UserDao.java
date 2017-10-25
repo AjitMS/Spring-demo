@@ -8,7 +8,7 @@ public interface UserDao {
 
 	public boolean loginUser(String email, String password);
 
-	public void validateRegisteredUser(String id);
+	public void validateRegisteredUser(Integer id);
 	
 	public User getUserByEmail(String email, User user);
 	

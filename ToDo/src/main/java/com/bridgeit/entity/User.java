@@ -5,7 +5,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.validation.constraints.Email;
@@ -21,13 +20,13 @@ import com.bridgeit.customAnnotation.FieldMatch;
 @Entity
 @Table(name = "user")
 @FieldMatch(message = "Passwords do not match")
-//@Component("user")
+// @Component("user")
 public class User {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "id")
-	private String id;
+	private Integer id;
 
 	@NotBlank(message = "*Required")
 	@Size(min = 2, max = 15)
@@ -40,7 +39,7 @@ public class User {
 	@Size(min = 4, max = 10)
 	@NotNull(message = "*Required")
 	@Pattern(regexp = "^[A-Za-z]*$", message = "Invalid Entry")
-	@Column(name = "lastname", unique = true)
+	@Column(name = "lastname")
 	private String lastName;
 
 	@NotBlank(message = "*Required")
@@ -84,23 +83,12 @@ public class User {
 
 	@Column(name = "isvalid")
 	private boolean isValid = false;
-	
-	@OneToOne
-	private Token token;
-	
+
 	// figured out a way to match both passwords
 	// in annotations using Class level Validator
 
 	public boolean getIsValid() {
 		return isValid;
-	}
-
-	public Token getToken() {
-		return token;
-	}
-
-	public void setToken(Token token) {
-		this.token = token;
 	}
 
 	public void setValid(boolean isValid) {
@@ -143,11 +131,11 @@ public class User {
 		this.lastName = lastName;
 	}
 
-	public String getId() {
+	public Integer getId() {
 		return id;
 	}
 
-	public void setId(String id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 
@@ -183,7 +171,7 @@ public class User {
 		this.phone = phone;
 	}
 
-	public User(String id, String firstName, String lastName, String email, String gender, String dob, String phone,
+	public User(Integer id, String firstName, String lastName, String email, String gender, String dob, String phone,
 			String password, String confirmPassword) {
 		this.id = id;
 		this.firstName = firstName;
@@ -216,7 +204,6 @@ public class User {
 	public String toString() {
 		return "User [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", email=" + email
 				+ ", gender=" + gender + ", dob=" + dob + ", phone=" + phone + ", password=" + password
-				+ ", confirmPassword=" + confirmPassword + ", isValid=" + isValid + ", token=" + token + "]";
+				+ ", confirmPassword=" + confirmPassword + ", isValid=" + isValid + "]";
 	}
-
 }
