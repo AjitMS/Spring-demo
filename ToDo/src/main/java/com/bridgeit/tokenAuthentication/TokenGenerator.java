@@ -1,8 +1,11 @@
 package com.bridgeit.tokenAuthentication;
 
+import java.io.IOException;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
 
 import org.redisson.Redisson;
@@ -16,87 +19,104 @@ import org.springframework.data.redis.core.HashOperations;
 import org.springframework.stereotype.Service;
 
 import com.bridgeit.entity.Token;
-import com.bridgeit.entity.User;
 
 @Service("/tokenService")
 public class TokenGenerator {
 
-	@Autowired
-	Token token;
+	Config config;
+
+	RedissonClient redisson;
+
+	RMapCache<String, Token> map;
 
 	@Autowired
 
+	// REDIS template for future use
 	@Resource(name = "redisTemplate")
 	private HashOperations<String, String, String> hashOps;
+	Logger logger = LoggerFactory.getLogger(TokenGenerator.class);
 
-	public Token generateToken(User user, String tokenType) {
+	@PostConstruct
+	public void initializeRedis() throws IOException {
+
+		config = new Config();
+
+		config.useSingleServer().setAddress("127.0.0.1:6379");
+
+		config = Config.fromJSON("{\n" + "   \"singleServerConfig\":{\n" + "      \"idleConnectionTimeout\":10000,\n"
+				+ "      \"pingTimeout\":1000,\n" + "      \"connectTimeout\":10000,\n" + "      \"timeout\":3000,\n"
+				+ "      \"retryAttempts\":3,\n" + "      \"retryInterval\":1500,\n"
+				+ "      \"reconnectionTimeout\":3000,\n" + "      \"failedAttempts\":3,\n"
+				+ "      \"password\":null,\n" + "      \"subscriptionsPerConnection\":5,\n"
+				+ "      \"clientName\":null,\n" + "      \"address\": \"redis://127.0.0.1:6379\",\n"
+				+ "      \"subscriptionConnectionMinimumIdleSize\":1,\n"
+				+ "      \"subscriptionConnectionPoolSize\":50,\n" + "      \"connectionMinimumIdleSize\":10,\n"
+				+ "      \"connectionPoolSize\":64,\n" + "      \"database\":0,\n" + "      \"dnsMonitoring\":false,\n"
+				+ "      \"dnsMonitoringInterval\":5000\n" + "   },\n" + "   \"threads\":0,\n"
+				+ "   \"nettyThreads\":0,\n" + "   \"codec\":null,\n" + "   \"useLinuxNativeEpoll\":false\n" + "}");
+
+		RedissonClient redisson = Redisson.create(config);
+
+		map = redisson.getMapCache("TestMap");
+
+	}
+
+	@PreDestroy
+	public void shutdownRedis() {
+		redisson.shutdown();
+	}
+
+	public Token generateTokenAndPushIntoRedis(Integer userId, String tokenType) {
 		UUID uuid = UUID.randomUUID();
 		String randomUUID = uuid.toString().replaceAll("-", "");
 		System.out.println("Random UUID is: " + randomUUID);
-		token.setTokenValue(randomUUID);
-		token.setUserId(user.getId());
+		Token token = new Token();
+		token.setUserId(userId);
 		token.setTokenType(tokenType);
+		token.setTokenValue(randomUUID);
+
+		switch (tokenType) {
+		case "accesstoken":
+			map.put(randomUUID, token, 24, TimeUnit.HOURS);
+			System.out.println("Storing access Token as: " + map.get(randomUUID));
+			break;
+		case "refreshtoken":
+			map.put(randomUUID, token, 24, TimeUnit.HOURS);
+			System.out.println("Storing refresh Token as:" + map.get(randomUUID));
+			break;
+		case "forgottoken":
+			map.put(randomUUID, token, 24, TimeUnit.HOURS);
+			break;
+		default:
+			logger.info("Invalid Choice");
+		}
+
+		// saving same token for userId into REDIS
+		// push into REDIS
+		// no need to push into MySQL DB anymore
+
+		System.out.println(tokenType + randomUUID + " Set successfully for user: " + userId);
+
 		return token;
 
 	}
 
-	Logger logger = LoggerFactory.getLogger(TokenGenerator.class);
-	RMapCache<String, Token> map;
+	public boolean verifyUserToken(Integer userId, String userTokenId, String tokenType) {
 
-	public void pushIntoRedis(User user, Token myToken) {
+		// check if tokenUUID exists
 
-		Config config = new Config();
+		System.out.println(tokenType + " Redis token is: " + map.get(userTokenId));
+		System.out.println("User token is: " + userTokenId);
 
-		config.useSingleServer().setAddress("127.0.0.1:6379");
+		// verify token value, token user, and token type
 
-		// LocalCachedMapOptions localCachedMapOptions =
-		// LocalCachedMapOptions.defaults()
-		// .evictionPolicy(EvictionPolicy.LFU);
-
-		RedissonClient redisson = Redisson.create(config);
-
-		try {
-
-			map = redisson.getMapCache("TestMap");
-
-			switch (myToken.getTokenType()) {
-			case "accesstoken":
-				map.put(token.getTokenValue(), token, 15, TimeUnit.MINUTES);
-				break;
-			case "refreshtoken":
-				map.put(token.getTokenValue(), token, 24, TimeUnit.HOURS);
-				break;
-			case "forgottoken":
-				map.put(token.getTokenValue(), token, 24, TimeUnit.HOURS);
-				break;
-			default:
-				logger.info("Invalid Choice");
-			}
-
-		}
-
-		finally {
-
-			// redisson.shutdown();
-		}
-
-		// saving same token for userId into Redis
-		// push into redis
-		// no need to push into MySQL DB anymore
-
-		System.out.println("Token " + token.getTokenValue() + " Set successfully for user: " + user.getId());
-	}
-
-	public boolean verifyUserToken(Integer userId, String userTokenId) {
-		String value = map.get(userId).getTokenValue();
-		System.out.println("user token: " + userTokenId);
-		System.out.println("Redis stored token: " + value);
-		if (value.equals(userTokenId)) {
-			System.out.println("Token Authentication Success");
+		if (map.containsKey(userTokenId) && map.get(userTokenId).getUserId().compareTo(userId) == 0
+				&& map.get(userTokenId).getTokenType().equalsIgnoreCase(tokenType)) {
+			System.out.println(tokenType + " authentication success");
 			return true;
 		}
-		System.out.println("Token Authentication failed");
+		System.out.println(tokenType + " authentication failed");
 		return false;
-	}
 
+	}
 }

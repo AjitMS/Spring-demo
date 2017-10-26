@@ -1,5 +1,8 @@
 package com.bridgeit.controllers;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,43 +30,66 @@ public class LoginController {
 	TokenGenerator generator;
 
 	@PostMapping("/login")
-	public ResponseEntity<String> loginUser(@RequestBody UserLoginPair loginPair, HttpServletRequest request) {
+	public ResponseEntity<List<Token>> loginUser(@RequestBody UserLoginPair loginPair, HttpServletRequest request) {
 		System.out.println("Into Login");
-		System.out.println("loign pair is: "+loginPair);
+		System.out.println("loign pair is: " + loginPair);
 		String email = loginPair.getEmail();
 		String password = loginPair.getPassword();
 		// grab entire user by email if proper credentials
-
 		if (userService.loginUser(email, password)) {
-			System.out.println("loginn success");
+			System.out.println("login success");
 			user = userService.getUserByEmail(email, user);
 
 			// TokenGenerator generator = new TokenGenerator();
 
 			// stop making objects. instead use @Autowired
-
+			Token accessToken = generator.generateTokenAndPushIntoRedis(user.getId(), "accesstoken");
+			Token refreshToken = generator.generateTokenAndPushIntoRedis(user.getId(), "refreshtoken");
+			List<Token> tokenList = new ArrayList<>();
+			tokenList.add(accessToken);
+			tokenList.add(refreshToken);
 			// generate token for specific user id and store it in REDIS
 
-			Token token = generator.generateToken(user);
-			generator.pushIntoRedis(user, token, "accesstoken");
+			System.out.println("ACCESS TOKEN: " + accessToken);
+			userService.sendLoginVerificationToken(user, accessToken, request);
+
+			System.out.println("REFRESH TOKEN: " + refreshToken);
+
+			System.out.println("Token List " + tokenList);
 
 			// send token link to user email
-			
-			userService.sendLoginVerificationToken(user, token, request);
-			return new ResponseEntity<String>("Login Token Sent. check Email", HttpStatus.OK);
+
+			return new ResponseEntity<List<Token>>(tokenList, HttpStatus.OK);
 		}
 		System.out.println("Login failed");
-		return new ResponseEntity<String>("Login Failure", HttpStatus.NO_CONTENT);
+		return new ResponseEntity<List<Token>>(HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
 	@GetMapping("/login/{userId}/{tokenId}")
 	public ResponseEntity<String> verifyUserToken(@PathVariable("userId") Integer userId,
 			@PathVariable("tokenId") String userTokenId) {
-		if (generator.verifyUserToken(userId, userTokenId)) {
-			System.out.println("Congratulations !");
+
+		// first validate access token is intact, if yes login
+
+		if (generator.verifyUserToken(userId, userTokenId, "accessToken")) {
+			System.out.println("Congratulations ! Access Token validation sucess");
 			return new ResponseEntity<String>("Token authenticated ! Redirecting...", HttpStatus.ACCEPTED);
-		} else
+		} else {
+			// else validate refresh token
+			System.out.println("Access token validation failed");
+			if (generator.verifyUserToken(userId, userTokenId, "refreshToken")) {
+
+				// and generate another new access token and login
+				Token newToken = generator.generateTokenAndPushIntoRedis(userId, "accessToken");
+
+				System.out.println("New access token is generated as: " + newToken);
+				return new ResponseEntity<String>("Token authenticated ! Redirecting...", HttpStatus.ACCEPTED);
+			}
+			// if refresh token fails, login fails
+			else
+				System.out.println("Refresh token validationn failed");
 			return new ResponseEntity<String>("Token not authenticated !", HttpStatus.NO_CONTENT);
+		}
 
 	}
 
@@ -82,7 +108,9 @@ public class LoginController {
 		}
 		// generating user token for forgot password
 		// generator is autowired
-		Token token = generator.generateToken(user);
+		// generating a token for forgot password
+		String tokenType = "acesstoken";
+		Token token = generator.generateTokenAndPushIntoRedis(user.getId(), tokenType);
 		userService.sendResetPasswordMail(user, request, token);
 
 		return new ResponseEntity<String>("reset password link has been sent to " + user.getEmail(),
@@ -92,10 +120,10 @@ public class LoginController {
 	@GetMapping("/login/resetpasswordtoken/{userId}/{userTokenId}")
 	public ResponseEntity<String> validateResetPasswordToken(@PathVariable("userId") Integer userId,
 			@PathVariable("userTokenId") String userTokenId) {
-		if (generator.verifyUserToken(userId, userTokenId))
-			return new ResponseEntity<String>("Redirecting to the password resetting page..",
-					HttpStatus.OK);
-		return new ResponseEntity<String>("Invalid link or incorrect token. password resetting failed. try again", HttpStatus.NO_CONTENT);
+		if (generator.verifyUserToken(userId, userTokenId, "forgotToken"))
+			return new ResponseEntity<String>("Redirecting to the password resetting page..", HttpStatus.OK);
+		return new ResponseEntity<String>("Invalid link or incorrect token. password resetting failed. try again",
+				HttpStatus.NO_CONTENT);
 	}
 
 	@PostMapping("/login/resetpassword")

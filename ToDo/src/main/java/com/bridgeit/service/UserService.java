@@ -19,7 +19,7 @@ public interface UserService {
 
 	public void sendRegistrationVerificationLink(Integer id, String email);
 
-	public void sendLoginVerificationToken(User user, Token token, HttpServletRequest request);
+	public void sendLoginVerificationToken(User user, Token accessToken, HttpServletRequest request);
 
 	public void sendResetPasswordMail(User user, HttpServletRequest request, Token token);
 
