@@ -135,4 +135,10 @@ public class UserServiceImpl implements UserService {
 		return;
 	}
 
+	@Override
+	public User getUserById(Integer id, User user) {
+		user = dao.getUserById(id, user);
+		return user;
+	}
+
 }

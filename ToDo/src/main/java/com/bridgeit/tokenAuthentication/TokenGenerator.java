@@ -6,7 +6,6 @@ import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import javax.annotation.Resource;
 
 import org.redisson.Redisson;
 import org.redisson.api.RMapCache;
@@ -14,8 +13,6 @@ import org.redisson.api.RedissonClient;
 import org.redisson.config.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.HashOperations;
 import org.springframework.stereotype.Service;
 
 import com.bridgeit.entity.Token;
@@ -29,11 +26,6 @@ public class TokenGenerator {
 
 	RMapCache<String, Token> map;
 
-	@Autowired
-
-	// REDIS template for future use
-	@Resource(name = "redisTemplate")
-	private HashOperations<String, String, String> hashOps;
 	Logger logger = LoggerFactory.getLogger(TokenGenerator.class);
 
 	@PostConstruct

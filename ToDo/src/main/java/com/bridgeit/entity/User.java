@@ -1,10 +1,16 @@
 package com.bridgeit.entity;
 
+import java.util.Collection;
+import java.util.List;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.validation.constraints.Email;
@@ -16,13 +22,15 @@ import javax.validation.constraints.Size;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import com.bridgeit.customAnnotation.FieldMatch;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "user")
 @FieldMatch(message = "Passwords do not match")
 // @Component("user")
-public class User {
 
+public class User {
+	
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "id")
@@ -84,8 +92,20 @@ public class User {
 	@Column(name = "isvalid")
 	private boolean isValid = false;
 
+	@JsonIgnore
+	@OneToMany(fetch = FetchType.EAGER, cascade = { CascadeType.ALL }, mappedBy = "user")
+	private List<Note> noteList;
+
 	// figured out a way to match both passwords
 	// in annotations using Class level Validator
+
+	public Collection<Note> getNoteList() {
+		return noteList;
+	}
+
+	public void setNoteList(List<Note> noteList) {
+		this.noteList = noteList;
+	}
 
 	public boolean getIsValid() {
 		return isValid;
@@ -204,6 +224,6 @@ public class User {
 	public String toString() {
 		return "User [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", email=" + email
 				+ ", gender=" + gender + ", dob=" + dob + ", phone=" + phone + ", password=" + password
-				+ ", confirmPassword=" + confirmPassword + ", isValid=" + isValid + "]";
+				+ ", confirmPassword=" + confirmPassword + ", isValid=" + isValid + ", noteList=" + noteList + "]";
 	}
 }

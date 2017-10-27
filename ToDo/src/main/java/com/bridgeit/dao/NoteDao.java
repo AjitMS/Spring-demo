@@ -5,14 +5,15 @@ import java.util.List;
 import com.bridgeit.entity.Note;
 
 public interface NoteDao {
-	public Note getNoteById(String id);
+	
+	public void createNote(Integer uId, Note note);
 
-	public void updateNote(String id, Note updatedNote);
+	public Note getNoteById(Integer id);
 
-	public void deleteNode(String id);
+	public void updateNote(Note updatedNote);
+
+	public void deleteNode(Note note);
 
 	public List<Note> getNoteList();
-
-	public void createNote(Note note);
 
 }

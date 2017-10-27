@@ -4,10 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,14 +22,22 @@ import com.bridgeit.entity.UserLoginPair;
 import com.bridgeit.service.UserService;
 import com.bridgeit.tokenAuthentication.TokenGenerator;
 
-@RestController("/login")
-public class LoginController {
+@RestController("/")
+public class UserController {
 
 	@Autowired
 	UserService userService;
 	User user;
 	@Autowired
 	TokenGenerator generator;
+
+	@GetMapping("/")
+	public ResponseEntity<String> greeting() {
+
+		return new ResponseEntity<String>(
+				"Project running Successfully<br> 1. use \"/login\" to login and <br> 2. \"/register\" to register",
+				HttpStatus.ACCEPTED);
+	}
 
 	@PostMapping("/login")
 	public ResponseEntity<List<Token>> loginUser(@RequestBody UserLoginPair loginPair, HttpServletRequest request) {
@@ -43,6 +53,10 @@ public class LoginController {
 			// TokenGenerator generator = new TokenGenerator();
 
 			// stop making objects. instead use @Autowired
+			// make sure user prototype type of @Autowired instead of singleton
+			// mistakenly @Autowired token and it returned the same token always for both
+			// refresh and access
+
 			Token accessToken = generator.generateTokenAndPushIntoRedis(user.getId(), "accesstoken");
 			Token refreshToken = generator.generateTokenAndPushIntoRedis(user.getId(), "refreshtoken");
 			List<Token> tokenList = new ArrayList<>();
@@ -51,14 +65,12 @@ public class LoginController {
 			// generate token for specific user id and store it in REDIS
 
 			System.out.println("ACCESS TOKEN: " + accessToken);
-			userService.sendLoginVerificationToken(user, accessToken, request);
-
 			System.out.println("REFRESH TOKEN: " + refreshToken);
-
 			System.out.println("Token List " + tokenList);
 
 			// send token link to user email
-
+			userService.sendLoginVerificationToken(user, accessToken, request);
+			System.out.println("Email has been sen to "+user.getEmail()+" .please check");
 			return new ResponseEntity<List<Token>>(tokenList, HttpStatus.OK);
 		}
 		System.out.println("Login failed");
@@ -76,18 +88,18 @@ public class LoginController {
 			return new ResponseEntity<String>("Token authenticated ! Redirecting...", HttpStatus.ACCEPTED);
 		} else {
 			// else validate refresh token
-			System.out.println("Access token validation failed");
+			System.out.println("Access token validation failed, starting refresh token validation");
 			if (generator.verifyUserToken(userId, userTokenId, "refreshToken")) {
 
 				// and generate another new access token and login
 				Token newToken = generator.generateTokenAndPushIntoRedis(userId, "accessToken");
 
-				System.out.println("New access token is generated as: " + newToken);
+				System.out.println("New access token is generated as: " + newToken + " for user " + user.getId());
 				return new ResponseEntity<String>("Token authenticated ! Redirecting...", HttpStatus.ACCEPTED);
 			}
 			// if refresh token fails, login fails
 			else
-				System.out.println("Refresh token validationn failed");
+				System.out.println("Refresh token validation failed");
 			return new ResponseEntity<String>("Token not authenticated !", HttpStatus.NO_CONTENT);
 		}
 
@@ -137,4 +149,40 @@ public class LoginController {
 		return new ResponseEntity<>("passwords do not match", HttpStatus.NO_CONTENT);
 	}
 
+	@PostMapping("/register")
+	public ResponseEntity<String> registerUser(@RequestBody @Valid User user, BindingResult bindingResult) {
+		System.out.println("WOOHOO !");
+		if (bindingResult.hasErrors()) {
+			System.out.println("Errors are: " + bindingResult);
+			System.out.println("User details: " + user);
+			return new ResponseEntity<String>(HttpStatus.NOT_ACCEPTABLE);
+		}
+		System.out.println("User details: " + user);
+
+		// saving user if not exists
+		if (!userService.userExists(user)) {
+			userService.registerUser(user);
+			System.out.println("Register Success");
+		} else {
+			return new ResponseEntity<String>("User Exists, please login. or forgot password ?",
+					HttpStatus.NOT_ACCEPTABLE);
+		}
+
+		// Email verification
+
+		userService.sendRegistrationVerificationLink(user.getId(), user.getEmail());
+
+		String greeting = "Thank you! \n A verification email has been sent to " + user.getEmail()
+				+ ". confirm registration by accessing link in the mail";
+
+		return new ResponseEntity<String>(greeting, HttpStatus.OK);
+	}
+
+	@GetMapping("/register/verifyuser/{id}")
+	public ResponseEntity<String> verifyRegisteredUser(@PathVariable("id") Integer id) {
+		userService.validateRegisteredUser(id);
+		System.out.println("User verified successfully !");
+		return new ResponseEntity<String>("Verified Successfully ! Redirecting to homepage...", HttpStatus.ACCEPTED);
+
+	}
 }

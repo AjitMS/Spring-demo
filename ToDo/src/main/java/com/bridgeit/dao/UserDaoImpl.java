@@ -111,10 +111,33 @@ public class UserDaoImpl implements UserDao {
 		@SuppressWarnings({ "deprecation", "unchecked" })
 		List<User> userList = session.createCriteria(User.class).add(Restrictions.eq("email", email)).list();
 		User user = userList.get(0);
-		System.out.println("user old password: "+user.getPassword());
+		System.out.println("user old password: " + user.getPassword());
 		user.setPassword(password);
 		session.saveOrUpdate(user);
-		System.out.println("user new password: "+user.getPassword());
+		System.out.println("user new password: " + user.getPassword());
 
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public User getUserById(Integer id, User user) {
+		System.out.println("reached in getUserByEmail successfully");
+		Session session = sessionFactory.openSession();
+		List<User> userList = new ArrayList<>();
+		// jpa
+		/*
+		 * CriteriaBuilder builder = session.getCriteriaBuilder(); CriteriaQuery<User>
+		 * criteria = builder.createQuery(User.class);
+		 */
+		userList = session.createQuery("from User").getResultList();
+		for (User tempUser : userList) {
+			System.out.println(tempUser.getId() + " vs " + id);
+			if (tempUser.getId().compareTo(id) == 0) {
+				user = tempUser;
+				return user;
+			}
+		}
+
+		return user;
 	}
 }

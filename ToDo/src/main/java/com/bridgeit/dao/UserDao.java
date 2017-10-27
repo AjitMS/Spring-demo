@@ -13,7 +13,9 @@ public interface UserDao {
 	public User getUserByEmail(String email, User user);
 	
 	public boolean userExists(User user);
-
+	
+	public User getUserById(Integer id, User user);
+	
 	public void resetPassword(String email, String password);
 		
 }

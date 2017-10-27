@@ -15,6 +15,8 @@ public interface UserService {
 
 	public User getUserByEmail(String email, User user);
 
+	public User getUserById(Integer id, User user);
+	
 	public void validateRegisteredUser(Integer id);
 
 	public void sendRegistrationVerificationLink(Integer id, String email);
