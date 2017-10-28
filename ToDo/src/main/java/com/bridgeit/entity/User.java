@@ -93,7 +93,7 @@ public class User {
 	private boolean isValid = false;
 
 	@JsonIgnore
-	@OneToMany(fetch = FetchType.EAGER, cascade = { CascadeType.ALL }, mappedBy = "user")
+	@OneToMany(fetch = FetchType.EAGER,  mappedBy = "user")
 	private List<Note> noteList;
 
 	// figured out a way to match both passwords

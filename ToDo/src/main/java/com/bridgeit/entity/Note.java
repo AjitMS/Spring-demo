@@ -1,6 +1,6 @@
 package com.bridgeit.entity;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -16,8 +16,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 @Entity
 @Table(name = "notes")
 public class Note {
-	
-	
+
 	@Column(name = "title")
 	private String title;
 
@@ -27,10 +26,10 @@ public class Note {
 	private Integer noteId;
 
 	@Column(name = "createdon")
-	private Date createdDate;
+	private LocalDateTime createdDate;
 
 	@Column(name = "modifiedon")
-	private Date modifiedDate;
+	private LocalDateTime modifiedDate;
 
 	@Column(name = "description")
 	private String description;
@@ -43,12 +42,17 @@ public class Note {
 
 	@Column(name = "ispinned")
 	private boolean isPinned;
-	
+
+	// @JsonIgnore is required so as to prevent Jackson fasterxml databind to go
+	// into loop
+	// if not mentioned, program goes into infinite loop and results into stack
+	// overflow
+
 	@JsonIgnore
 	@ManyToOne
-	@JoinColumn(name="userid")
+	@JoinColumn(name = "userid")
 	private User user = new User();
-	
+
 	public User getUser() {
 		return user;
 	}
@@ -73,23 +77,21 @@ public class Note {
 		this.description = description;
 	}
 
-	public Date getCreatedDate() {
+	public LocalDateTime getCreatedDate() {
 		return createdDate;
 	}
 
-	public void setCreatedDate(Date createdDate) {
+	public void setCreatedDate(LocalDateTime createdDate) {
 		this.createdDate = createdDate;
 	}
 
-	public Date getModifiedDate() {
+	public LocalDateTime getModifiedDate() {
 		return modifiedDate;
 	}
 
-	public Note(String title, Integer noteId, Date createdDate, Date modifiedDate, String description,
+	public Note(String title, LocalDateTime createdDate, LocalDateTime modifiedDate, String description,
 			boolean isArchived, boolean inTrash, boolean isPinned) {
-		super();
 		this.title = title;
-		this.noteId = noteId;
 		this.createdDate = createdDate;
 		this.modifiedDate = modifiedDate;
 		this.description = description;
@@ -98,7 +100,7 @@ public class Note {
 		this.isPinned = isPinned;
 	}
 
-	public void setModifiedDate(Date modifiedDate) {
+	public void setModifiedDate(LocalDateTime modifiedDate) {
 		this.modifiedDate = modifiedDate;
 	}
 
@@ -108,22 +110,6 @@ public class Note {
 
 	public void setNoteId(Integer noteId) {
 		this.noteId = noteId;
-	}
-
-//	public User getUser() {
-//		return user;
-//	}
-//
-//	public void setUser(User user) {
-//		this.user = user;
-//	}
-
-	public Integer getId() {
-		return noteId;
-	}
-
-	public void setId(Integer id) {
-		this.noteId = id;
 	}
 
 	public boolean isArchived() {

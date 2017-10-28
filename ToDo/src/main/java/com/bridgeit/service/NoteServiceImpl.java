@@ -17,8 +17,8 @@ public class NoteServiceImpl implements NoteService {
 
 	@Override
 	@Transactional
-	public Note getNoteById(Integer id) {
-		Note note = dao.getNoteById(id);
+	public Note getNoteById(Integer uId, Integer nId) {
+		Note note = dao.getNoteById(uId, nId);
 		return note;
 	}
 
@@ -31,14 +31,14 @@ public class NoteServiceImpl implements NoteService {
 
 	@Override
 	@Transactional
-	public void deleteNode(Note note) {
-		dao.deleteNode(note);
+	public void deleteNote(Integer uId, Integer nId) {
+		dao.deleteNote(uId, nId);
 	}
 
 	@Override
-	@Transactional
-	public List<Note> getNoteList(List<Note> noteList) {
-		noteList = dao.getNoteList();
+	public List<Note> getNoteList(Integer uId) {
+		List<Note> noteList;
+		noteList = dao.getNoteList(uId);
 		return noteList;
 	}
 
@@ -48,6 +48,21 @@ public class NoteServiceImpl implements NoteService {
 		dao.createNote(uId, note);
 		return;
 
+	}
+
+	@Override
+	@Transactional
+	public void moveToTrash(Note note) {
+		dao.moveToTrash(note);
+	}
+
+	@Override	
+	@Transactional
+	public List<Note> getTrashedNoteList(Integer uId) {
+		List<Note> trashedNoteList = dao.getTrashedNoteList(uId);
+		if (trashedNoteList.size() == 0)
+			return null;
+		return trashedNoteList;
 	}
 
 }

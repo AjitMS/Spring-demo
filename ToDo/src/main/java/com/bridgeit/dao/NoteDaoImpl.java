@@ -1,5 +1,7 @@
 package com.bridgeit.dao;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.criteria.CriteriaBuilder;
@@ -7,6 +9,7 @@ import javax.persistence.criteria.CriteriaQuery;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -20,32 +23,56 @@ public class NoteDaoImpl implements NoteDao {
 	SessionFactory sessionFactory;
 
 	@Override
-	public Note getNoteById(Integer id) {
+	public Note getNoteById(Integer uId, Integer nId) {
+		System.out.println("got id as: " + uId);
 		Note note = new Note();
 		// get note from database
 		Session session = sessionFactory.openSession();
-		note = (Note) session.get(Note.class, id);
-		return note;
+
+		note = (Note) session.get(Note.class, nId);
+		// to verify note belongs to same user
+		if (note.getUser().getId().compareTo(uId) == 0)
+			return note;
+		return null;
 	}
 
 	@Override
 	public void updateNote(Note updatedNote) {
 		Session session = sessionFactory.openSession();
-		// update node in database
-		session.saveOrUpdate(updatedNote);
-		return;
+		Transaction tx = session.beginTransaction();
+		Note oldNote = session.get(Note.class, updatedNote.getNoteId());
+		oldNote = updatedNote;
+		updatedNote.setCreatedDate(LocalDateTime.now());
+		session.update(updatedNote);
+		tx.commit();
+		session.close();
+
 	}
 
 	@Override
-	public void deleteNode(Note note) {
+	public void moveToTrash(Note note) {
 		Session session = sessionFactory.openSession();
-		// delete node from database
+		// do not delete node from database
+		// set inTrash to true;
 		session.delete(note);
 		return;
 	}
 
 	@Override
-	public List<Note> getNoteList() {
+	public void deleteNote(Integer uId, Integer nId) {
+		Session session = sessionFactory.openSession();
+		Transaction tx = session.beginTransaction();
+		System.out.println("uId is: " + uId + " and nId is: " + nId);
+		Note note = session.get(Note.class, nId);
+		System.out.println("note is: " + note);
+		session.delete(note);
+		tx.commit();
+		session.close();
+		return;
+	}
+
+	@Override
+	public List<Note> getNoteList(Integer uId) {
 		// bring entire note list from database
 		Session session = sessionFactory.openSession();
 
@@ -56,19 +83,62 @@ public class NoteDaoImpl implements NoteDao {
 
 		// Create CriteriaQuery
 		CriteriaQuery<Note> criteria = builder.createQuery(Note.class);
+
 		criteria.from(Note.class);
-		List<Note> noteList = session.createQuery(criteria).getResultList();
+		List<Note> entireNoteList = session.createQuery(criteria).getResultList();
+
+		// learn a more efficient way to retrieve notes
+
+		List<Note> noteList = new ArrayList<>();
+		for (Note tempNote : entireNoteList)
+			// if note is temporarily deleted
+			if (tempNote.getUser().getId().compareTo(uId) == 0 && !tempNote.isInTrash())
+				noteList.add(tempNote);
+
+		return noteList;
+	}
+
+	@Override
+	public List<Note> getTrashedNoteList(Integer uId) {
+		// bring entire note list from database
+		Session session = sessionFactory.openSession();
+
+		// since session.createCriteria() is deprecated
+
+		// Create CriteriaBuilder
+		CriteriaBuilder builder = session.getCriteriaBuilder();
+
+		// Create CriteriaQuery
+		CriteriaQuery<Note> criteria = builder.createQuery(Note.class);
+
+		criteria.from(Note.class);
+		List<Note> entireNoteList = session.createQuery(criteria).getResultList();
+
+		// learn a more efficient way to retrieve notes
+
+		List<Note> noteList = new ArrayList<>();
+		for (Note tempNote : entireNoteList)
+			// if note is temporarily deleted
+			if (tempNote.getUser().getId().compareTo(uId) == 0 && tempNote.isInTrash())
+				noteList.add(tempNote);
 
 		return noteList;
 	}
 
 	@Override
 	public void createNote(Integer uId, Note note) {
-		System.out.println("saving note");
+		System.out.println("saving notes with user id :" + uId);
 		Session session = sessionFactory.getCurrentSession();
-		User user = session.get(User.class, uId);
+		User user = new User();
+		try {
+			user = session.get(User.class, uId);
+		} catch (Exception E) {
+			System.out.println("User Id " + uId + " does not exist");
+		}
+		System.out.println("User is: " + user);
 		note.setUser(user);
-		session.save(note);
+		note.setCreatedDate(LocalDateTime.now());
+		session.persist(note);
 		return;
 	}
 
