@@ -66,17 +66,18 @@ public class NoteController {
 		return new ResponseEntity<Note>(note, HttpStatus.OK);
 	}
 
-	@PutMapping(value = "{uid}/homepage/updatenote/{nid}")
-	public ResponseEntity<Note> updateNote(@RequestBody Note updatedNote, @PathVariable("nid") Integer nid) {
+	@PutMapping(value = "{uId}/homepage/updatenote/{nId}")
+	public ResponseEntity<Note> updateNote(@RequestBody Note updatedNote, @PathVariable("nId") Integer nId,
+			@PathVariable("uId") Integer uId) {
 		System.out.println("Here i stand");
+		updatedNote.getUser().setId(uId);
 		noteService.updateNote(updatedNote);
 
 		return new ResponseEntity<Note>(updatedNote, HttpStatus.OK);
 	}
 
 	@DeleteMapping(value = "{uId}/homepage/deletenote/{nId}")
-	public ResponseEntity<String> deleteNode(@PathVariable("nId") Integer nId,
-			@PathVariable("uId") Integer uId) {
+	public ResponseEntity<String> deleteNode(@PathVariable("nId") Integer nId, @PathVariable("uId") Integer uId) {
 		noteService.deleteNote(uId, nId);
 		return new ResponseEntity<String>("CHECK DB", HttpStatus.OK);
 	}

@@ -140,7 +140,7 @@ public class Note {
 	public String toString() {
 		return "Note [title=" + title + ", noteId=" + noteId + ", createdDate=" + createdDate + ", modifiedDate="
 				+ modifiedDate + ", description=" + description + ", isArchived=" + isArchived + ", inTrash=" + inTrash
-				+ ", isPinned=" + isPinned + "]";
+				+ ", isPinned=" + isPinned + ", user=" + user + "]";
 	}
 
 	public Note() {

@@ -38,23 +38,44 @@ public class NoteDaoImpl implements NoteDao {
 
 	@Override
 	public void updateNote(Note updatedNote) {
+		System.out.println("user id is : " + updatedNote.getUser().getId());
 		Session session = sessionFactory.openSession();
 		Transaction tx = session.beginTransaction();
-		Note oldNote = session.get(Note.class, updatedNote.getNoteId());
-		oldNote = updatedNote;
-		updatedNote.setCreatedDate(LocalDateTime.now());
-		session.update(updatedNote);
+		updatedNote.setUser(session.get(User.class, updatedNote.getUser().getId()));
+		//System.out.println("owner of note is: "+updatedNote.getUser());
+		updatedNote.setModifiedDate(LocalDateTime.now());
+		session.saveOrUpdate(updatedNote);
 		tx.commit();
-		session.close();
 
 	}
 
 	@Override
 	public void moveToTrash(Note note) {
 		Session session = sessionFactory.openSession();
-		// do not delete node from database
-		// set inTrash to true;
-		session.delete(note);
+		Transaction tx = session.beginTransaction();
+		note = session.get(Note.class, note.getNoteId());
+		note.setInTrash(true);
+		tx.commit();
+		return;
+	}
+
+	@Override
+	public void pinNote(Note note) {
+		Session session = sessionFactory.openSession();
+		Transaction tx = session.beginTransaction();
+		note = session.get(Note.class, note.getNoteId());
+		note.setPinned(true);
+		tx.commit();
+		return;
+	}
+
+	@Override
+	public void archiveNote(Note note) {
+		Session session = sessionFactory.openSession();
+		Transaction tx = session.beginTransaction();
+		note = session.get(Note.class, note.getNoteId());
+		note.setArchived(true);
+		tx.commit();
 		return;
 	}
 

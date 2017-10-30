@@ -30,7 +30,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 // @Component("user")
 
 public class User {
-	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "id")
@@ -93,7 +93,7 @@ public class User {
 	private boolean isValid = false;
 
 	@JsonIgnore
-	@OneToMany(fetch = FetchType.EAGER,  mappedBy = "user")
+	@OneToMany(cascade = { CascadeType.ALL }, fetch = FetchType.EAGER, mappedBy = "user")
 	private List<Note> noteList;
 
 	// figured out a way to match both passwords

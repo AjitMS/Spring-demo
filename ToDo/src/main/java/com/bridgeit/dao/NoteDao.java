@@ -20,4 +20,8 @@ public interface NoteDao {
 
 	List<Note> getTrashedNoteList(Integer uId);
 
+	void archiveNote(Note note);
+
+	void pinNote(Note note);
+
 }

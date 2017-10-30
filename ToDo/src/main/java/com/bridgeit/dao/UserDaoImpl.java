@@ -131,7 +131,6 @@ public class UserDaoImpl implements UserDao {
 		 */
 		userList = session.createQuery("from User").getResultList();
 		for (User tempUser : userList) {
-			System.out.println(tempUser.getId() + " vs " + id);
 			if (tempUser.getId().compareTo(id) == 0) {
 				user = tempUser;
 				return user;
