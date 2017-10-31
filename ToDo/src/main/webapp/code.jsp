@@ -13,11 +13,11 @@
 <body style="text-align: center; margin: 0 auto;">
 	<div
 		style="margin: 0 auto;">
-		<%=fbConnection.getFBAuthUrl()%>
-		<form action="code.jsp">
+		<%=(String)request.getParameter("code")%>
+		<form action="FacebookSocialController">
 		<input type="button" value="login via Facebook" />
-		<a href="<%=fbConnection.getFBAuthUrl()%>"> click here to login via fb
-		</a>
+		<%-- <a href="<%=fbConnection.getFBAuthUrl()%>"> click here to login via fb
+		</a> --%>
 		</form>
 	</div>
 </body>

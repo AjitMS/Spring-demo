@@ -1,9 +1,14 @@
 package com.bridgeit.controllers;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
+import javax.servlet.ServletException;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +25,8 @@ import com.bridgeit.entity.Token;
 import com.bridgeit.entity.User;
 import com.bridgeit.entity.UserLoginPair;
 import com.bridgeit.service.UserService;
+import com.bridgeit.socialUtility.FBConnection;
+import com.bridgeit.socialUtility.FBGraph;
 import com.bridgeit.tokenAuthentication.TokenGenerator;
 
 @RestController("/")
@@ -32,11 +39,37 @@ public class UserController {
 	TokenGenerator generator;
 
 	@GetMapping("/")
-	public ResponseEntity<String> greeting() {
+	public void service(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+		String code;
+		code = req.getParameter("code");
+		System.out.println("Code is: " + code);
+		ServletOutputStream out = res.getOutputStream();
+		out.println(
+				"<a href=\"http://www.facebook.com/dialog/oauth?client_id=1129138110550336&redirect_uri=http://localhost:8080/ToDo&scope=email\n"
+						+ "\">Facebook Login using Java </a>");
+		if (code != null || "".equals(code)) {
 
-		return new ResponseEntity<String>(
-				"Project running Successfully<br> 1. use \"/login\" to login and <br> 2. \"/register\" to register",
-				HttpStatus.ACCEPTED);
+			FBConnection fbConnection = new FBConnection();
+			String accessToken = fbConnection.getAccessToken(code);
+
+			FBGraph fbGraph = new FBGraph(accessToken);
+			String graph = fbGraph.getFBGraph();
+			Map<String, String> fbProfileData = fbGraph.getGraphData(graph);
+
+			out.println("<h1>Facebook Login using Java</h1>");
+			out.println("<h2>Application Facebook login</h2>");
+			out.println("<div>Welcome " + fbProfileData.get("name"));
+			out.println("<div>Your Id: " + fbProfileData.get("id"));
+			out.println("<div>You are " + fbProfileData.get("gender"));
+
+			// for debugging
+			System.out.println("<h1>Facebook Login using Java</h1>");
+			System.out.println("<h2>Application Facebook login</h2>");
+			System.out.println("<div>Welcome " + fbProfileData.get("name"));
+			System.out.println("<div>Your Id: " + fbProfileData.get("id"));
+			System.out.println("<div>You are " + fbProfileData.get("gender"));
+		}
+		System.out.println("Homepage");
 	}
 
 	@PostMapping("/login")
@@ -70,7 +103,7 @@ public class UserController {
 
 			// send token link to user email
 			userService.sendLoginVerificationToken(user, accessToken, request);
-			System.out.println("Email has been sen to "+user.getEmail()+" .please check");
+			System.out.println("Email has been sen to " + user.getEmail() + " .please check");
 			return new ResponseEntity<List<Token>>(tokenList, HttpStatus.OK);
 		}
 		System.out.println("Login failed");
@@ -150,7 +183,8 @@ public class UserController {
 	}
 
 	@PostMapping("/register")
-	public ResponseEntity<String> registerUser(@RequestBody @Valid User user, BindingResult bindingResult) {
+	public ResponseEntity<String> registerUser(@RequestBody @Valid User user, BindingResult bindingResult,
+			String registeredVia) {
 		System.out.println("WOOHOO !");
 		if (bindingResult.hasErrors()) {
 			System.out.println("Errors are: " + bindingResult);
@@ -169,8 +203,8 @@ public class UserController {
 		}
 
 		// Email verification
-
-		userService.sendRegistrationVerificationLink(user.getId(), user.getEmail());
+		if (!registeredVia.equalsIgnoreCase("facebook") || registeredVia.equalsIgnoreCase("google"))
+			userService.sendRegistrationVerificationLink(user.getId(), user.getEmail());
 
 		String greeting = "Thank you! \n A verification email has been sent to " + user.getEmail()
 				+ ". confirm registration by accessing link in the mail";

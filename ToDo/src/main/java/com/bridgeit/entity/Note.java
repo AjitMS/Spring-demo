@@ -10,6 +10,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -24,7 +25,8 @@ public class Note {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Integer noteId;
-
+	
+	@NotNull(message = "improper value")
 	@Column(name = "createdon")
 	private LocalDateTime createdDate;
 
@@ -37,8 +39,10 @@ public class Note {
 	@Column(name = "isarchived")
 	private boolean isArchived;
 
+	//initially, note must be not in trash
+	//so keep this true initially
 	@Column(name = "intrash")
-	private boolean inTrash;
+	private boolean inTrash = false;
 
 	@Column(name = "ispinned")
 	private boolean isPinned;
@@ -136,12 +140,12 @@ public class Note {
 		this.isPinned = isPinned;
 	}
 
-	@Override
+	/*@Override
 	public String toString() {
 		return "Note [title=" + title + ", noteId=" + noteId + ", createdDate=" + createdDate + ", modifiedDate="
 				+ modifiedDate + ", description=" + description + ", isArchived=" + isArchived + ", inTrash=" + inTrash
 				+ ", isPinned=" + isPinned + ", user=" + user + "]";
-	}
+	}*/
 
 	public Note() {
 

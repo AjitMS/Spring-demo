@@ -9,6 +9,8 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
 
+import org.json.JSONObject;
+
 public class FBConnection {
 	// get api to connect to FB
 	// let user enter credentials through postman in JSON format
@@ -22,14 +24,16 @@ public class FBConnection {
 	public static final String REDIRECT_URI = "http://localhost:8080/ToDo";
 
 	static String accessToken = "";
-	
-	//generates initial link to access
+
+	// generates initial link to access
 	public String getFBAuthUrl() {
 		String fbLoginUrl = "";
 		try {
+
 			fbLoginUrl = "http://www.facebook.com/dialog/oauth?" + "client_id=" + FBConnection.FB_APP_ID
 					+ "&redirect_uri=" + URLEncoder.encode(FBConnection.REDIRECT_URI, "UTF-8") + "&scope=email";
-		} catch (UnsupportedEncodingException e) {
+
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		System.out.println("fbLoginUrl is: " + fbLoginUrl);
@@ -73,11 +77,21 @@ public class FBConnection {
 				e.printStackTrace();
 				throw new RuntimeException("Unable to connect with Facebook " + e);
 			}
-
+			
 			accessToken = b.toString();
-			if (accessToken.startsWith("{")) {
+			JSONObject root = new JSONObject(accessToken);
+			//JSONArray sportsArray = root.getJSONArray("sport");
+			// now get the first element:
+			//JSONObject firstSport = sportsArray.getJSONObject(0);
+			// and so on
+			accessToken = root.getString("access_token"); 
+			System.out.println("access_token Is: "+accessToken);
+			
+			
+			
+			/*if (accessToken.startsWith("{")) {
 				throw new RuntimeException("ERROR: Access Token Invalid: " + accessToken);
-			}
+			}*/
 		}
 		System.out.println("Access token is: " + accessToken);
 		return accessToken;

@@ -79,7 +79,7 @@ public class NoteController {
 	@DeleteMapping(value = "{uId}/homepage/deletenote/{nId}")
 	public ResponseEntity<String> deleteNode(@PathVariable("nId") Integer nId, @PathVariable("uId") Integer uId) {
 		noteService.deleteNote(uId, nId);
-		return new ResponseEntity<String>("CHECK DB", HttpStatus.OK);
+		return new ResponseEntity<String>("Note Deleted. CHECK DB", HttpStatus.OK);
 	}
 
 }

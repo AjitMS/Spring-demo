@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -39,10 +40,12 @@ public class UserDaoImpl implements UserDao {
 	public void validateRegisteredUser(Integer id) {
 		User user;
 		Session session = sessionFactory.openSession();
+		Transaction tx = session.beginTransaction();
 		user = session.get(User.class, id);
 		System.out.println("isvalid initially: " + user.getIsValid());
 		user.setIsValid(true);
 		session.saveOrUpdate(user);
+		tx.commit();
 		System.out.println("isvalid finally: " + user.getIsValid());
 	}
 
