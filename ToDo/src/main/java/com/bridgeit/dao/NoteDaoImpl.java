@@ -41,10 +41,10 @@ public class NoteDaoImpl implements NoteDao {
 		System.out.println("user id is : " + updatedNote.getUser().getId());
 		Session session = sessionFactory.openSession();
 		Transaction tx = session.beginTransaction();
-		updatedNote.setUser(session.get(User.class, updatedNote.getUser().getId()));
+		// updatedNote.setUser(session.get(User.class, updatedNote.getUser().getId()));
 		// System.out.println("owner of note is: "+updatedNote.getUser());
 		updatedNote.setModifiedDate(LocalDateTime.now());
-		session.saveOrUpdate(updatedNote);
+		session.update(updatedNote);
 		tx.commit();
 
 	}

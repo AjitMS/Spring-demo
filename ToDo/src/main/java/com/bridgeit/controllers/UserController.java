@@ -1,14 +1,9 @@
 package com.bridgeit.controllers;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
-import javax.servlet.ServletException;
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,60 +20,38 @@ import com.bridgeit.entity.Token;
 import com.bridgeit.entity.User;
 import com.bridgeit.entity.UserLoginPair;
 import com.bridgeit.service.UserService;
-import com.bridgeit.socialUtility.FBConnection;
-import com.bridgeit.socialUtility.FBGraph;
 import com.bridgeit.tokenAuthentication.TokenGenerator;
+import com.bridgeit.utilities.Encryption;
 
 @RestController("/")
 public class UserController {
 
 	@Autowired
 	UserService userService;
+
 	User user;
+
 	@Autowired
 	TokenGenerator generator;
+	@Autowired
+	Encryption encryption;
 
 	@GetMapping("/")
-	public void service(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-		String code;
-		code = req.getParameter("code");
-		System.out.println("Code is: " + code);
-		ServletOutputStream out = res.getOutputStream();
-		out.println(
-				"<a href=\"http://www.facebook.com/dialog/oauth?client_id=1129138110550336&redirect_uri=http://localhost:8080/ToDo&scope=email\n"
-						+ "\">Facebook Login using Java </a>");
-		if (code != null || "".equals(code)) {
-
-			FBConnection fbConnection = new FBConnection();
-			String accessToken = fbConnection.getAccessToken(code);
-
-			FBGraph fbGraph = new FBGraph(accessToken);
-			String graph = fbGraph.getFBGraph();
-			Map<String, String> fbProfileData = fbGraph.getGraphData(graph);
-
-			out.println("<h1>Facebook Login using Java</h1>");
-			out.println("<h2>Application Facebook login</h2>");
-			out.println("<div>Welcome " + fbProfileData.get("name"));
-			out.println("<div>Your Id: " + fbProfileData.get("id"));
-			out.println("<div>You are " + fbProfileData.get("gender"));
-
-			// for debugging
-			System.out.println("<h1>Facebook Login using Java</h1>");
-			System.out.println("<h2>Application Facebook login</h2>");
-			System.out.println("<div>Welcome " + fbProfileData.get("name"));
-			System.out.println("<div>Your Id: " + fbProfileData.get("id"));
-			System.out.println("<div>You are " + fbProfileData.get("gender"));
-		}
-		System.out.println("Homepage");
+	public ResponseEntity<String> welcomeUser() {
+		String welcome = "**Welcome to ToDo App**<br> use /login to login, \t<br> use /register to register,<br> \n use /fbconnect to login social<br>";
+		return new ResponseEntity<String>(welcome, HttpStatus.ACCEPTED);
 	}
 
 	@PostMapping("/login")
-	public ResponseEntity<List<Token>> loginUser(@RequestBody UserLoginPair loginPair, HttpServletRequest request) {
+	public ResponseEntity<String> loginUser(@RequestBody UserLoginPair loginPair, HttpServletRequest request) {
 		System.out.println("Into Login");
 		System.out.println("loign pair is: " + loginPair);
 		String email = loginPair.getEmail();
 		String password = loginPair.getPassword();
 		// grab entire user by email if proper credentials
+		user = userService.getUserByEmail(email, user);
+		if (!user.getIsValid())
+			return new ResponseEntity<String>("Account not validated. please check email", HttpStatus.FORBIDDEN);
 		if (userService.loginUser(email, password)) {
 			System.out.println("login success");
 			user = userService.getUserByEmail(email, user);
@@ -104,10 +77,13 @@ public class UserController {
 			// send token link to user email
 			userService.sendLoginVerificationToken(user, accessToken, request);
 			System.out.println("Email has been sen to " + user.getEmail() + " .please check");
-			return new ResponseEntity<List<Token>>(tokenList, HttpStatus.OK);
+			return new ResponseEntity<String>(
+					"Access Token: " + accessToken + "<br>Refresh Token: " + refreshToken + " <br>please check mail",
+					HttpStatus.OK);
+
 		}
 		System.out.println("Login failed");
-		return new ResponseEntity<List<Token>>(HttpStatus.INTERNAL_SERVER_ERROR);
+		return new ResponseEntity<String>(HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
 	@GetMapping("/login/{userId}/{tokenId}")
@@ -183,8 +159,7 @@ public class UserController {
 	}
 
 	@PostMapping("/register")
-	public ResponseEntity<String> registerUser(@RequestBody @Valid User user, BindingResult bindingResult,
-			String registeredVia) {
+	public ResponseEntity<String> registerUser(@RequestBody @Valid User user, BindingResult bindingResult) {
 		System.out.println("WOOHOO !");
 		if (bindingResult.hasErrors()) {
 			System.out.println("Errors are: " + bindingResult);
@@ -203,8 +178,7 @@ public class UserController {
 		}
 
 		// Email verification
-		if (!registeredVia.equalsIgnoreCase("facebook") || registeredVia.equalsIgnoreCase("google"))
-			userService.sendRegistrationVerificationLink(user.getId(), user.getEmail());
+		userService.sendRegistrationVerificationLink(user.getId(), user.getEmail());
 
 		String greeting = "Thank you! \n A verification email has been sent to " + user.getEmail()
 				+ ". confirm registration by accessing link in the mail";

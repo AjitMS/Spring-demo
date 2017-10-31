@@ -13,13 +13,6 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
-
-import org.springframework.format.annotation.DateTimeFormat;
 
 import com.bridgeit.customAnnotation.FieldMatch;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -36,56 +29,56 @@ public class User {
 	@Column(name = "id")
 	private Integer id;
 
-	@NotBlank(message = "*Required")
-	@Size(min = 2, max = 15)
-	@NotNull(message = "*Required")
-	@Pattern(regexp = "^[A-Za-z]*$", message = "Invalid Entry")
+	// @NotBlank(message = "*Required")
+	// @Size(min = 2, max = 15)
+	// @NotNull(message = "*Required")
+	// @Pattern(regexp = "^[A-Za-z]*$", message = "Invalid Entry")
 	@Column(name = "firstname")
 	private String firstName;
 
-	@NotBlank(message = "*Required")
-	@Size(min = 4, max = 10)
-	@NotNull(message = "*Required")
-	@Pattern(regexp = "^[A-Za-z]*$", message = "Invalid Entry")
+	// @NotBlank(message = "*Required")
+	// @Size(min = 4, max = 10)
+	// @NotNull(message = "*Required")
+	// @Pattern(regexp = "^[A-Za-z]*$", message = "Invalid Entry")
 	@Column(name = "lastname")
 	private String lastName;
 
-	@NotBlank(message = "*Required")
-	@Size(min = 6, max = 30, message = "Invalid Entry")
-	@NotNull(message = "*Required")
-	@Email(message = "Invalid Entry")
+	// @NotBlank(message = "*Required")
+	// @Size(min = 6, max = 30, message = "Invalid Entry")
+	// @NotNull(message = "*Required")
+	// @Email(message = "Invalid Entry")
 	@Column(name = "email")
 	private String email;
 
-	@NotBlank(message = "*Required")
-	@Size(min = 4, max = 6, message = "Invalid Entry")
-	@NotNull(message = "*Required")
+	// @NotBlank(message = "*Required")
+	// @Size(min = 4, max = 6, message = "Invalid Entry")
+	// @NotNull(message = "*Required")
 	@Column(name = "gender")
 	private String gender;
 
-	@NotBlank(message = "*Required")
-	@NotNull(message = "*Required")
-	@DateTimeFormat(pattern = "dd/MM/yyyy")
+	// @NotBlank(message = "*Required")
+	// @NotNull(message = "*Required")
+	// @DateTimeFormat(pattern = "dd/MM/yyyy")
 	// @Past(message = "Invalid Entry")
 	@Column(name = "dob")
 	private String dob;
 
-	@NotBlank(message = "*Required")
-	@NotNull(message = "*Required")
-	@Size(min = 10, max = 10, message = "Invalid Entry")
-	@Pattern(regexp = "^[0-9]*$", message = "Invalid Entry")
+	// @NotBlank(message = "*Required")
+	// @NotNull(message = "*Required")
+	// @Size(min = 10, max = 10, message = "Invalid Entry")
+	// @Pattern(regexp = "^[0-9]*$", message = "Invalid Entry")
 	@Column(name = "phone")
 	private String phone;
 
-	@NotBlank(message = "*Required")
-	@NotNull(message = "*Required")
-	@Size(min = 4, max = 30, message = "Short Entry")
+	// @NotBlank(message = "*Required")
+	// @NotNull(message = "*Required")
+	// @Size(min = 4, max = 30, message = "Short Entry")
 	@Column(name = "password")
 	private String password;
 
-	@NotBlank(message = "*Required")
-	@NotNull(message = "*Required")
-	@Size(min = 4, max = 30, message = "Short Entry")
+	// @NotBlank(message = "*Required")
+	// @NotNull(message = "*Required")
+	// @Size(min = 4, max = 30, message = "Short Entry")
 	@Transient
 	private String confirmPassword;
 
@@ -93,7 +86,7 @@ public class User {
 	private boolean isValid = false;
 
 	@JsonIgnore
-	@OneToMany(cascade = { CascadeType.PERSIST}, fetch = FetchType.EAGER, mappedBy = "user")
+	@OneToMany(cascade = { CascadeType.PERSIST }, fetch = FetchType.EAGER, mappedBy = "user")
 	private List<Note> noteList;
 
 	// figured out a way to match both passwords

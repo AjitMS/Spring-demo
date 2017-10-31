@@ -7,7 +7,7 @@ import com.bridgeit.entity.User;
 
 public interface UserService {
 
-	public void registerUser(User user);
+	public Integer registerUser(User user);
 
 	public boolean loginUser(String email, String password);
 

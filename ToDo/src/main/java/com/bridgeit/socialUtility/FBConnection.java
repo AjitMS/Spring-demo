@@ -10,7 +10,9 @@ import java.net.URLConnection;
 import java.net.URLEncoder;
 
 import org.json.JSONObject;
+import org.springframework.stereotype.Component;
 
+@Component
 public class FBConnection {
 	// get api to connect to FB
 	// let user enter credentials through postman in JSON format
@@ -21,7 +23,7 @@ public class FBConnection {
 
 	public static final String FB_APP_ID = "1129138110550336";
 	public static final String FB_APP_SECRET = "859246d852d128e79c9fb533ea264994";
-	public static final String REDIRECT_URI = "http://localhost:8080/ToDo";
+	public static final String REDIRECT_URI = "http://localhost:8080/ToDo/fblogin";
 
 	static String accessToken = "";
 
@@ -31,7 +33,8 @@ public class FBConnection {
 		try {
 
 			fbLoginUrl = "http://www.facebook.com/dialog/oauth?" + "client_id=" + FBConnection.FB_APP_ID
-					+ "&redirect_uri=" + URLEncoder.encode(FBConnection.REDIRECT_URI, "UTF-8") + "&scope=email";
+					+ "&redirect_uri=" + URLEncoder.encode(FBConnection.REDIRECT_URI, "UTF-8") + "&response_type=code"
+					+ "&scope=public_profile,email";
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -77,21 +80,12 @@ public class FBConnection {
 				e.printStackTrace();
 				throw new RuntimeException("Unable to connect with Facebook " + e);
 			}
-			
+
 			accessToken = b.toString();
 			JSONObject root = new JSONObject(accessToken);
-			//JSONArray sportsArray = root.getJSONArray("sport");
-			// now get the first element:
-			//JSONObject firstSport = sportsArray.getJSONObject(0);
-			// and so on
-			accessToken = root.getString("access_token"); 
-			System.out.println("access_token Is: "+accessToken);
-			
-			
-			
-			/*if (accessToken.startsWith("{")) {
-				throw new RuntimeException("ERROR: Access Token Invalid: " + accessToken);
-			}*/
+			accessToken = root.getString("access_token");
+			System.out.println("access_token Is: " + accessToken);
+
 		}
 		System.out.println("Access token is: " + accessToken);
 		return accessToken;

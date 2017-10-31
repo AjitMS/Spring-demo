@@ -10,30 +10,42 @@ import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import com.bridgeit.utilities.Encryption;
 import com.bridgeit.entity.User;
 
 @Repository
 public class UserDaoImpl implements UserDao {
 
 	@Autowired
+	Encryption encryption;
+
+	@Autowired
 	SessionFactory sessionFactory;
 	Session session;
 
-	public void registerUser(User user) {
+	public Integer registerUser(User user) {
 		System.out.println("Session Factory: " + sessionFactory);
 		// hibernate code here
 
 		// open session
 
 		session = sessionFactory.getCurrentSession();
+
 		// store user
-		session.save(user);
+		user.setPassword(encryption.encryptPassword(user.getPassword()));
+		System.out.println("password is: "+user.getPassword()+" length= "+user.getPassword().length());
+		
+		Integer id = (Integer) session.save(user);
+		if (id == -1)
+			return -1;
+
 		// session.close();
 		// do not close session. spring does it for us automatically.
 		// no need to beginTransaction, or commit/roll_back manually
 		// let spring handle that for us
+
 		System.out.println("Register successful in DAO");
-		return;
+		return id;
 
 	}
 
@@ -44,14 +56,14 @@ public class UserDaoImpl implements UserDao {
 		user = session.get(User.class, id);
 		System.out.println("isvalid initially: " + user.getIsValid());
 		user.setIsValid(true);
-		session.saveOrUpdate(user);
+		session.update(user);
 		tx.commit();
 		System.out.println("isvalid finally: " + user.getIsValid());
 	}
 
 	public boolean loginUser(String email, String password) {
 		Session session;
-		session = (Session) sessionFactory.openSession();
+		session = sessionFactory.openSession();
 
 		if (email == null || password == null) {
 			System.out.println("Empty Credentials");
@@ -61,7 +73,8 @@ public class UserDaoImpl implements UserDao {
 		// authentication logic
 		@SuppressWarnings("unchecked")
 		List<User> userList = session.createQuery("from User").getResultList();
-
+		password = encryption.encryptPassword(password);
+		System.out.println("User entered password: "+password);
 		for (User tempUser : userList)
 			if (tempUser.getEmail().equals(email)) {
 				if (tempUser.getPassword().equals(password)) {
@@ -84,7 +97,6 @@ public class UserDaoImpl implements UserDao {
 		 */
 		userList = session.createQuery("from User").getResultList();
 		for (User tempUser : userList) {
-			System.out.println(tempUser.getEmail() + " vs " + email);
 			if (tempUser.getEmail().equalsIgnoreCase(email)) {
 				user = tempUser;
 				return user;
@@ -111,9 +123,10 @@ public class UserDaoImpl implements UserDao {
 	@Override
 	public void resetPassword(String email, String password) {
 		Session session = sessionFactory.openSession();
-		@SuppressWarnings({ "deprecation", "unchecked" })
-		List<User> userList = session.createCriteria(User.class).add(Restrictions.eq("email", email)).list();
-		User user = userList.get(0);
+		password = encryption.encryptPassword(password);
+		@SuppressWarnings({ "deprecation"})
+		User user = (User) session.createCriteria(User.class).add(Restrictions.eq("email", email)).uniqueResult();
+		//user = userList.get(0);
 		System.out.println("user old password: " + user.getPassword());
 		user.setPassword(password);
 		session.saveOrUpdate(user);

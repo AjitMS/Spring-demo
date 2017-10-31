@@ -31,10 +31,10 @@ public class UserServiceImpl implements UserService {
 	 */
 	@Override
 	@Transactional
-	public void registerUser(User user) {
-
-		dao.registerUser(user);
+	public Integer registerUser(User user) {
 		System.out.println("Register Success in service");
+		return dao.registerUser(user);
+
 	}
 
 	/*
@@ -109,7 +109,7 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public void sendLoginVerificationToken(User user, Token accessToken, HttpServletRequest request) {
 		String subject = "Bridgelabz Secure Login Link";
-		String link = request.getServerName() + ":" + request.getServerPort() + request.getContextPath()
+		String link = "http://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath()
 				+ request.getServletPath() + user.getId() + "/" + accessToken.getTokenValue();
 		System.out.println("link is: " + link);
 		String msg = "Dear " + user.getFirstName().toUpperCase() + ", Login from below secure link\n" + link + "";
