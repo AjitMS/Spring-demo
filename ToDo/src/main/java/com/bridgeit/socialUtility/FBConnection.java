@@ -9,6 +9,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
 
+import org.apache.log4j.Logger;
 import org.json.JSONObject;
 import org.springframework.stereotype.Component;
 
@@ -20,7 +21,7 @@ public class FBConnection {
 	// submit the user credentials to FB API
 	// if return value comes true
 	// log in user and set new access for that user
-
+	Logger logger = Logger.getLogger(FBConnection.class);
 	public static final String FB_APP_ID = "1129138110550336";
 	public static final String FB_APP_SECRET = "859246d852d128e79c9fb533ea264994";
 	public static final String REDIRECT_URI = "http://localhost:8080/ToDo/fblogin";
@@ -39,7 +40,7 @@ public class FBConnection {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		System.out.println("fbLoginUrl is: " + fbLoginUrl);
+		logger.debug("fbLoginUrl is: " + fbLoginUrl);
 		return fbLoginUrl;
 	}
 
@@ -84,10 +85,10 @@ public class FBConnection {
 			accessToken = b.toString();
 			JSONObject root = new JSONObject(accessToken);
 			accessToken = root.getString("access_token");
-			System.out.println("access_token Is: " + accessToken);
+			logger.debug("access_token Is: " + accessToken);
 
 		}
-		System.out.println("Access token is: " + accessToken);
+		logger.debug("Access token is: " + accessToken);
 		return accessToken;
 	}
 }

@@ -13,11 +13,14 @@ import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
-public class EmailUtility {
+import org.apache.log4j.Logger;
 
+
+public class EmailUtility {
+	Logger logger = Logger.getLogger(EmailUtility.class);
 	public static void sendMail(String toMail, String subject, String messageBody)
 			throws FileNotFoundException, ClassNotFoundException, IOException {
-
+		
 		// add relative path to the java class later we have used hardcoded path
 		EmailInfo emailInfo = EmailCredentialSerializer.getEmailInfo();
 		String fromMail = emailInfo.getEmail();

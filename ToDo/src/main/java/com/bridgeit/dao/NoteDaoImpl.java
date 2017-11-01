@@ -7,6 +7,7 @@ import java.util.List;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 
+import org.apache.log4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -18,13 +19,13 @@ import com.bridgeit.entity.User;
 
 @Repository("noteDao")
 public class NoteDaoImpl implements NoteDao {
-
+	Logger logger = Logger.getLogger(NoteDaoImpl.class);
 	@Autowired
 	SessionFactory sessionFactory;
 
 	@Override
 	public Note getNoteById(Integer uId, Integer nId) {
-		System.out.println("got id as: " + uId);
+		logger.info("got id in DAO as: " + uId);
 		Note note = new Note();
 		// get note from database
 		Session session = sessionFactory.openSession();
@@ -38,11 +39,9 @@ public class NoteDaoImpl implements NoteDao {
 
 	@Override
 	public void updateNote(Note updatedNote) {
-		System.out.println("user id is : " + updatedNote.getUser().getId());
+		logger.info("user id is : " + updatedNote.getUser().getId());
 		Session session = sessionFactory.openSession();
 		Transaction tx = session.beginTransaction();
-		// updatedNote.setUser(session.get(User.class, updatedNote.getUser().getId()));
-		// System.out.println("owner of note is: "+updatedNote.getUser());
 		updatedNote.setModifiedDate(LocalDateTime.now());
 		session.update(updatedNote);
 		tx.commit();
@@ -83,9 +82,9 @@ public class NoteDaoImpl implements NoteDao {
 	public void deleteNote(Integer uId, Integer nId) {
 		Session session = sessionFactory.openSession();
 		Transaction tx = session.beginTransaction();
-		System.out.println("uId is: " + uId + " and nId is: " + nId);
+		logger.info("uId is: " + uId + " and nId is: " + nId);
 		Note note = session.get(Note.class, nId);
-		System.out.println("note is: " + note);
+		logger.info("note is: " + note);
 		session.delete(note);
 		tx.commit();
 		session.close();
@@ -148,17 +147,20 @@ public class NoteDaoImpl implements NoteDao {
 
 	@Override
 	public void createNote(Integer uId, Note note) {
-		System.out.println("saving notes with user id :" + uId);
+		logger.info("saving notes with user id :" + uId);
 		Session session = sessionFactory.getCurrentSession();
 		User user = new User();
 		try {
+
 			user = session.get(User.class, uId);
+			note.setUser(user);
+			note.setCreatedDate(LocalDateTime.now());
+
 		} catch (Exception E) {
-			System.out.println("User Id " + uId + " does not exist");
+			logger.info("User Id " + uId + " does not exist");
+			return;
 		}
-		System.out.println("User is: " + user);
-		note.setUser(user);
-		note.setCreatedDate(LocalDateTime.now());
+		logger.info("User is: " + user);
 		session.persist(note);
 		return;
 	}

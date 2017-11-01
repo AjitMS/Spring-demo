@@ -3,6 +3,7 @@ package com.bridgeit.controllers;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +21,8 @@ import com.bridgeit.service.UserService;
 
 @RestController("{uid}/homepage")
 public class NoteController {
+
+	Logger logger = Logger.getLogger(NoteController.class);
 
 	@Autowired
 	NoteService noteService;
@@ -41,13 +44,13 @@ public class NoteController {
 
 	@PostMapping(value = "{uId}/homepage/createnote")
 	public ResponseEntity<String> createNote(@RequestBody Note note, @PathVariable("uId") Integer uId) {
-		System.out.println("Id is: " + uId);
+		logger.info("Id is: " + uId);
 		try {
 			noteService.createNote(uId, note);
-			return new ResponseEntity<>(HttpStatus.OK);
+			return new ResponseEntity<String>("Note Added.", HttpStatus.OK);
 		} catch (Exception E) {
 			E.printStackTrace();
-			return new ResponseEntity<String>(HttpStatus.NO_CONTENT);
+			return new ResponseEntity<String>("User does not exist", HttpStatus.BAD_REQUEST);
 		}
 
 	}
@@ -58,7 +61,7 @@ public class NoteController {
 		try {
 			note = noteService.getNoteById(uId, nId);
 		} catch (Exception E) {
-			System.out.println("Error Loading Note / Note not found");
+			logger.error("Error Loading Note / Note not found");
 			return new ResponseEntity<Note>(HttpStatus.NO_CONTENT);
 		}
 

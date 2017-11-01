@@ -68,24 +68,16 @@
 	<!-- Add support for reading web resources: css, images, js, etc ... -->
 	<!-- <mvc:resources location="/resources/" mapping="/resources/**"></mvc:resources> -->
 
-	 <!-- Step 5: Add beans to enable Email Verification -->
-	<!--<bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
-		<property name="host" value="smtp.gmail.com" />
-		<property name="username" value="ajitshikalgar786@gmail.com" />
-		<property name="password" value="ajitms786" />
-		<property name="javaMailProperties">
-			<props>
-				<prop key="mail.smtp.auth">true</prop>
-				<prop key="mail.smtp.socketFactory.port">465</prop>
-				<prop key="mail.smtp.socketFactory.class">javax.net.ssl.SSLSocketFactory</prop>
-				<prop key="mail.smtp.port">465</prop>
-			</props>
-		</property>
-	</bean> -->
+	<!-- Step 5: Add beans to enable Email Verification -->
+	<!--<bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl"> 
+		<property name="host" value="smtp.gmail.com" /> <property name="username" 
+		value="ajitshikalgar786@gmail.com" /> <property name="password" value="ajitms786" 
+		/> <property name="javaMailProperties"> <props> <prop key="mail.smtp.auth">true</prop> 
+		<prop key="mail.smtp.socketFactory.port">465</prop> <prop key="mail.smtp.socketFactory.class">javax.net.ssl.SSLSocketFactory</prop> 
+		<prop key="mail.smtp.port">465</prop> </props> </property> </bean> -->
 
-<!-- 	<bean id="verifyEmail" class="com.bridgeit.emailUtility.EmailVerification">
-		<property name="mailSender" ref="mailSender" />
-	</bean> -->
+	<!-- <bean id="verifyEmail" class="com.bridgeit.emailUtility.EmailVerification"> 
+		<property name="mailSender" ref="mailSender" /> </bean> -->
 
 	<!-- turn on declarative caching -->
 	<cache:annotation-driven />
@@ -100,7 +92,13 @@
 		p:connection-factory-ref="jedisConnectionFactory"></bean>
 
 	<!-- declare Redis Cache Manager -->
-	 <bean id="cacheManager" class="org.springframework.data.redis.cache.RedisCacheManager"
+	<bean id="cacheManager" class="org.springframework.data.redis.cache.RedisCacheManager"
 		c:redis-operations-ref="redisTemplate"></bean>
+
+	<!-- Add MVC Interceptors -->
+
+	<mvc:interceptors>
+			<bean id="loggerInterceptor" class="org.baeldung.web.interceptor.LoggerInterceptor" />
+	</mvc:interceptors>
 
 </beans>

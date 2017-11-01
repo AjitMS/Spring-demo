@@ -8,6 +8,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +29,8 @@ import com.bridgeit.utilities.Encryption;
 @RestController("/")
 public class UserController {
 
+	Logger logger = Logger.getLogger(UserController.class);
+
 	@Autowired
 	UserService userService;
 
@@ -45,15 +48,19 @@ public class UserController {
 	}
 
 	@PostMapping("/login")
-	public ResponseEntity<String> loginUser(@RequestBody UserLoginPair loginPair, HttpServletRequest request) throws FileNotFoundException, ClassNotFoundException, IOException {
-		System.out.println("Into Login");
-		System.out.println("loign pair is: " + loginPair);
+	public ResponseEntity<String> loginUser(@RequestBody UserLoginPair loginPair, HttpServletRequest request)
+			throws FileNotFoundException, ClassNotFoundException, IOException {
+		
+		logger.info("Only an activated user can log in");
+		
+		logger.info("Into Login");
+		logger.info("loign pair is: "+ loginPair);
 		String email = loginPair.getEmail();
 		String password = loginPair.getPassword();
 		// grab entire user by email if proper credentials
 		user = userService.getUserByEmail(email, user);
 		if (!user.getIsValid())
-			return new ResponseEntity<String>("Account not validated. please check email", HttpStatus.FORBIDDEN);
+			return new ResponseEntity<String>("Account not validated. please check email or register", HttpStatus.FORBIDDEN);
 		if (userService.loginUser(email, password)) {
 			System.out.println("login success");
 			user = userService.getUserByEmail(email, user);
@@ -72,19 +79,19 @@ public class UserController {
 			tokenList.add(refreshToken);
 			// generate token for specific user id and store it in REDIS
 
-			System.out.println("ACCESS TOKEN: " + accessToken);
-			System.out.println("REFRESH TOKEN: " + refreshToken);
-			System.out.println("Token List " + tokenList);
+			logger.info("ACCESS TOKEN: "+ accessToken);
+			logger.info("REFRESH TOKEN: "+ refreshToken);
+			logger.info("Token List is "+ tokenList);
 
 			// send token link to user email
 			userService.sendLoginVerificationToken(user, accessToken, request);
-			System.out.println("Email has been sen to " + user.getEmail() + " .please check");
+			logger.info("Email has been sent to  "+ user.getEmail() + " .please check");
 			return new ResponseEntity<String>(
 					"Access Token: " + accessToken + "<br>Refresh Token: " + refreshToken + " <br>please check mail",
 					HttpStatus.OK);
 
 		}
-		System.out.println("Login failed");
+		logger.error("Login failed");
 		return new ResponseEntity<String>(HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
@@ -95,17 +102,18 @@ public class UserController {
 		// first validate access token is intact, if yes login
 
 		if (generator.verifyUserToken(userId, userTokenId, "accessToken")) {
-			System.out.println("Congratulations ! Access Token validation sucess");
+			logger.info("Congratulations ! Access Token validation sucess");
 			return new ResponseEntity<String>("Token authenticated ! Redirecting...", HttpStatus.ACCEPTED);
 		} else {
 			// else validate refresh token
-			System.out.println("Access token validation failed, starting refresh token validation");
+
+			logger.error("Access token validation failed, starting refresh token validation");
 			if (generator.verifyUserToken(userId, userTokenId, "refreshToken")) {
 
 				// and generate another new access token and login
 				Token newToken = generator.generateTokenAndPushIntoRedis(userId, "accessToken");
 
-				System.out.println("New access token is generated as: " + newToken + " for user " + user.getId());
+				logger.info("New access token is generated as: +"+ newToken + " for user " + user.getId());
 				return new ResponseEntity<String>("Token authenticated ! Redirecting...", HttpStatus.ACCEPTED);
 			}
 			// if refresh token fails, login fails
@@ -116,23 +124,23 @@ public class UserController {
 
 	}
 
-	@PostMapping("/login/forgotpassword")
-	public ResponseEntity<String> forgotPassword(@RequestBody User user, HttpServletRequest request) throws FileNotFoundException, ClassNotFoundException, IOException {
+	@PostMapping("/forgotpassword")
+	public ResponseEntity<String> forgotPassword(@RequestBody User user, HttpServletRequest request)
+			throws FileNotFoundException, ClassNotFoundException, IOException {
 		try {
 			user = userService.getUserByEmail(user.getEmail(), user);
-			System.out.println("email is: " + user.getEmail());
-			System.out.println("user is: " + user);
+			logger.info("email is: " + user.getEmail());
+			logger.info("user is: " + user);
 		} catch (Exception E) {
 			E.printStackTrace();
 		}
 		if (user == null) {
-			System.out.println("No such email registered");
+			logger.debug("No such email registered");
 			return new ResponseEntity<String>("No such email registered", HttpStatus.NO_CONTENT);
 		}
 		// generating user token for forgot password
 		// generator is autowired
-		// generating a token for forgot password
-		String tokenType = "acesstoken";
+		String tokenType = "forgottoken";
 		Token token = generator.generateTokenAndPushIntoRedis(user.getId(), tokenType);
 		userService.sendResetPasswordMail(user, request, token);
 
@@ -140,7 +148,7 @@ public class UserController {
 				HttpStatus.ACCEPTED);
 	}
 
-	@GetMapping("/login/resetpasswordtoken/{userId}/{userTokenId}")
+	@GetMapping("/resetpasswordtoken/{userId}/{userTokenId}")
 	public ResponseEntity<String> validateResetPasswordToken(@PathVariable("userId") Integer userId,
 			@PathVariable("userTokenId") String userTokenId) {
 		if (generator.verifyUserToken(userId, userTokenId, "forgotToken"))
@@ -149,7 +157,7 @@ public class UserController {
 				HttpStatus.NO_CONTENT);
 	}
 
-	@PostMapping("/login/resetpassword")
+	@PostMapping("forgotpassword/resetpassword")
 	public ResponseEntity<String> resetPassword(@RequestBody User user) {
 
 		if (user.getPassword().equals(user.getConfirmPassword())) {
@@ -161,19 +169,20 @@ public class UserController {
 	}
 
 	@PostMapping("/register")
-	public ResponseEntity<String> registerUser(@RequestBody @Valid User user, BindingResult bindingResult) throws FileNotFoundException, ClassNotFoundException, IOException {
+	public ResponseEntity<String> registerUser(@RequestBody @Valid User user, BindingResult bindingResult)
+			throws FileNotFoundException, ClassNotFoundException, IOException {
 		System.out.println("WOOHOO !");
 		if (bindingResult.hasErrors()) {
-			System.out.println("Errors are: " + bindingResult);
-			System.out.println("User details: " + user);
+			logger.info("Errors are: " + bindingResult);
+			logger.info("User details: " + user);
 			return new ResponseEntity<String>(HttpStatus.NOT_ACCEPTABLE);
 		}
-		System.out.println("User details: " + user);
+		logger.info("User details: "+ user);
 
 		// saving user if not exists
 		if (!userService.userExists(user)) {
 			userService.registerUser(user);
-			System.out.println("Register Success");
+			logger.info("Register Success");
 		} else {
 			return new ResponseEntity<String>("User Exists, please login. or forgot password ?",
 					HttpStatus.NOT_ACCEPTABLE);
@@ -188,10 +197,10 @@ public class UserController {
 		return new ResponseEntity<String>(greeting, HttpStatus.OK);
 	}
 
-	@GetMapping("/register/verifyuser/{id}")
-	public ResponseEntity<String> verifyRegisteredUser(@PathVariable("id") Integer id) {
-		userService.validateRegisteredUser(id);
-		System.out.println("User verified successfully !");
+	@GetMapping("/register/activateuser/{id}")
+	public ResponseEntity<String> activateUser(@PathVariable("id") Integer id) {
+		userService.activateUser(id);
+		logger.info("User verified successfully !");
 		return new ResponseEntity<String>("Verified Successfully ! Redirecting to homepage...", HttpStatus.ACCEPTED);
 
 	}

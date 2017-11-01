@@ -5,6 +5,7 @@ import java.io.IOException;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,10 +21,10 @@ import com.bridgeit.entity.User;
  */
 @Service("userService")
 public class UserServiceImpl implements UserService {
-
+	Logger logger = Logger.getLogger(UserServiceImpl.class);
 	@Autowired
 	UserDao dao;
-	
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -78,8 +79,8 @@ public class UserServiceImpl implements UserService {
 	 * from '0'
 	 */
 	@Transactional
-	public void validateRegisteredUser(Integer id) {
-		dao.validateRegisteredUser(id);
+	public void activateUser(Integer id) {
+		dao.activateUser(id);
 	}
 
 	/*
@@ -121,11 +122,12 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public void sendResetPasswordMail(User user, HttpServletRequest request, Token token) throws FileNotFoundException, ClassNotFoundException, IOException {
+	public void sendResetPasswordMail(User user, HttpServletRequest request, Token token)
+			throws FileNotFoundException, ClassNotFoundException, IOException {
 
 		String subject = "Bridgelabz Secure Login Link";
 		String link = request.getServerName() + ":" + request.getServerPort() + request.getContextPath()
-				+ "/login/resetpasswordtoken/" + user.getId() + "/" + token.getTokenValue();
+				+ "/resetpasswordtoken/" + user.getId() + "/" + token.getTokenValue();
 		String msg = "Dear " + user.getFirstName() + ", Access below link to reset password\n" + link + "";
 		EmailUtility.sendMail(user.getEmail(), subject, msg);
 

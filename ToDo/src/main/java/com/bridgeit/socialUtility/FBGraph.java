@@ -8,11 +8,12 @@ import java.net.URLConnection;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 public class FBGraph {
-
+	Logger logger = Logger.getLogger(FBGraph.class);
 	private String accessToken;
 
 	public FBGraph(String accessToken) {
@@ -32,7 +33,7 @@ public class FBGraph {
 			b.append(inputLine + "\n");
 		in.close();
 		graph = b.toString();
-		System.out.println("Graph String is: " + graph);
+		logger.debug("Graph String is: "+ graph);
 		return graph;
 	}
 
@@ -50,7 +51,7 @@ public class FBGraph {
 			e.printStackTrace();
 			throw new RuntimeException("ERROR in parsing FB graph data. " + e);
 		}
-		System.out.println("fbProfile is: " + fbProfile);
+		logger.debug("fbProfile is: "+ fbProfile);
 		return fbProfile;
 	}
 }

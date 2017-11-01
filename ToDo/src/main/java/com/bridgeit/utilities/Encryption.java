@@ -2,11 +2,12 @@ package com.bridgeit.utilities;
 
 import java.security.MessageDigest;
 
+import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 @Component
 public class Encryption {
-
+	Logger logger = Logger.getLogger(Encryption.class);	
 	public String encryptPassword(String password) {
 		String generatedPassword = null;
 		try {

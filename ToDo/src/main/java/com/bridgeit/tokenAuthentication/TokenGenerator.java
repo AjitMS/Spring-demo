@@ -7,26 +7,21 @@ import java.util.concurrent.TimeUnit;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
+import org.apache.log4j.Logger;
 import org.redisson.Redisson;
 import org.redisson.api.RMapCache;
 import org.redisson.api.RedissonClient;
 import org.redisson.config.Config;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.bridgeit.entity.Token;
 
 @Service("/tokenService")
 public class TokenGenerator {
-
+	Logger logger = Logger.getLogger(TokenGenerator.class);
 	Config config;
-
 	RedissonClient redisson;
-
 	RMapCache<String, Token> map;
-
-	Logger logger = LoggerFactory.getLogger(TokenGenerator.class);
 
 	@PostConstruct
 	public void initializeRedis() throws IOException {
@@ -61,7 +56,7 @@ public class TokenGenerator {
 	public Token generateTokenAndPushIntoRedis(Integer userId, String tokenType) {
 		UUID uuid = UUID.randomUUID();
 		String randomUUID = uuid.toString().replaceAll("-", "");
-		System.out.println("Random UUID is: " + randomUUID);
+		logger.debug("Random UUID is: " + randomUUID);
 		Token token = new Token();
 		token.setUserId(userId);
 		token.setTokenType(tokenType);
@@ -70,11 +65,11 @@ public class TokenGenerator {
 		switch (tokenType) {
 		case "accesstoken":
 			map.put(randomUUID, token, 24, TimeUnit.HOURS);
-			System.out.println("Storing access Token as: " + map.get(randomUUID));
+			logger.info("Storing access Token as: " + map.get(randomUUID));
 			break;
 		case "refreshtoken":
 			map.put(randomUUID, token, 24, TimeUnit.HOURS);
-			System.out.println("Storing refresh Token as:" + map.get(randomUUID));
+			logger.info("Storing refresh Token as:" + map.get(randomUUID));
 			break;
 		case "forgottoken":
 			map.put(randomUUID, token, 24, TimeUnit.HOURS);
@@ -87,7 +82,7 @@ public class TokenGenerator {
 		// push into REDIS
 		// no need to push into MySQL DB anymore
 
-		System.out.println(tokenType + randomUUID + " Set successfully for user: " + userId);
+		logger.info(tokenType + randomUUID + " Set successfully for user: " + userId);
 
 		return token;
 
@@ -97,17 +92,17 @@ public class TokenGenerator {
 
 		// check if tokenUUID exists
 
-		System.out.println(tokenType + " Redis token is: " + map.get(userTokenId));
-		System.out.println("User token is: " + userTokenId);
+		logger.info(tokenType + " Redis token is: " + map.get(userTokenId));
+		logger.info("User token is: " + userTokenId);
 
 		// verify token value, token user, and token type
 
 		if (map.containsKey(userTokenId) && map.get(userTokenId).getUserId().compareTo(userId) == 0
 				&& map.get(userTokenId).getTokenType().equalsIgnoreCase(tokenType)) {
-			System.out.println(tokenType + " authentication success");
+			logger.info(tokenType + " authentication success");
 			return true;
 		}
-		System.out.println(tokenType + " authentication failed");
+		logger.info(tokenType + " authentication failed");
 		return false;
 
 	}

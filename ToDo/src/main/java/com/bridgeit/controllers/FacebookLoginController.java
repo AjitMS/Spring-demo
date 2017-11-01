@@ -8,6 +8,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,6 +22,7 @@ import com.bridgeit.tokenAuthentication.TokenGenerator;
 @RestController
 public class FacebookLoginController {
 
+	Logger logger = Logger.getLogger(FacebookLoginController.class);
 	@Autowired
 	UserService userService;
 	User user;
@@ -32,11 +34,12 @@ public class FacebookLoginController {
 	TokenGenerator tokenService;
 
 	@GetMapping("/fbconnect")
+
 	public void initialConnect(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
-		System.out.println("Initial login");
+		logger.info("Initial login");
 		String fbLoginURL = fbConnection.getFBAuthUrl();
-		System.out.println("FBLoginURL: " + fbLoginURL);
+		logger.info("FBLoginURL: " +fbLoginURL);
 		response.sendRedirect(fbLoginURL);
 	}
 
@@ -44,7 +47,7 @@ public class FacebookLoginController {
 	public void login(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
 		String code;
 		code = req.getParameter("code");
-		System.out.println("Code is: " + code);
+		logger.info("Code is: "+ code);
 		fbConnection = new FBConnection();
 		String fbAccessToken = fbConnection.getAccessToken(code);// Facebook's access token
 
@@ -60,13 +63,9 @@ public class FacebookLoginController {
 		tokenService.generateTokenAndPushIntoRedis(userId, "refreshtoken");
 
 		// for debugging
-		System.out.println("<h1>Facebook Login using Java</h1>");
-		System.out.println("<h2>Application Facebook login</h2>");
-		System.out.println("<div>Welcome " + fbProfileData.get("name"));
-		System.out.println("<div>Your Id: " + fbProfileData.get("id"));
-		System.out.println("<div>You are " + fbProfileData.get("gender"));
+		logger.info("Fb Profile Data: " +fbProfileData);
 
-		System.out.println("Homepage");
+		logger.info("Homepage");
 		RequestDispatcher dispatcher = req.getRequestDispatcher("fbsuccess.jsp");
 		req.setAttribute("user", user);
 		dispatcher.forward(req, res);
