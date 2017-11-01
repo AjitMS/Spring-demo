@@ -68,8 +68,8 @@
 	<!-- Add support for reading web resources: css, images, js, etc ... -->
 	<!-- <mvc:resources location="/resources/" mapping="/resources/**"></mvc:resources> -->
 
-	<!-- Step 5: Add beans to enable Email Verification -->
-	<bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+	 <!-- Step 5: Add beans to enable Email Verification -->
+	<!--<bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
 		<property name="host" value="smtp.gmail.com" />
 		<property name="username" value="ajitshikalgar786@gmail.com" />
 		<property name="password" value="ajitms786" />
@@ -81,11 +81,11 @@
 				<prop key="mail.smtp.port">465</prop>
 			</props>
 		</property>
-	</bean>
+	</bean> -->
 
-	<bean id="verifyEmail" class="com.bridgeit.emailUtility.EmailVerification">
+<!-- 	<bean id="verifyEmail" class="com.bridgeit.emailUtility.EmailVerification">
 		<property name="mailSender" ref="mailSender" />
-	</bean>
+	</bean> -->
 
 	<!-- turn on declarative caching -->
 	<cache:annotation-driven />

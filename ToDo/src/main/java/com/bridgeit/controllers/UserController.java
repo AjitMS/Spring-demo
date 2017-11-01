@@ -1,5 +1,7 @@
 package com.bridgeit.controllers;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,7 +45,7 @@ public class UserController {
 	}
 
 	@PostMapping("/login")
-	public ResponseEntity<String> loginUser(@RequestBody UserLoginPair loginPair, HttpServletRequest request) {
+	public ResponseEntity<String> loginUser(@RequestBody UserLoginPair loginPair, HttpServletRequest request) throws FileNotFoundException, ClassNotFoundException, IOException {
 		System.out.println("Into Login");
 		System.out.println("loign pair is: " + loginPair);
 		String email = loginPair.getEmail();
@@ -115,7 +117,7 @@ public class UserController {
 	}
 
 	@PostMapping("/login/forgotpassword")
-	public ResponseEntity<String> forgotPassword(@RequestBody User user, HttpServletRequest request) {
+	public ResponseEntity<String> forgotPassword(@RequestBody User user, HttpServletRequest request) throws FileNotFoundException, ClassNotFoundException, IOException {
 		try {
 			user = userService.getUserByEmail(user.getEmail(), user);
 			System.out.println("email is: " + user.getEmail());
@@ -159,7 +161,7 @@ public class UserController {
 	}
 
 	@PostMapping("/register")
-	public ResponseEntity<String> registerUser(@RequestBody @Valid User user, BindingResult bindingResult) {
+	public ResponseEntity<String> registerUser(@RequestBody @Valid User user, BindingResult bindingResult) throws FileNotFoundException, ClassNotFoundException, IOException {
 		System.out.println("WOOHOO !");
 		if (bindingResult.hasErrors()) {
 			System.out.println("Errors are: " + bindingResult);

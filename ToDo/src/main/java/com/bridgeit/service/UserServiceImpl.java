@@ -1,5 +1,8 @@
 package com.bridgeit.service;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,7 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.bridgeit.dao.UserDao;
-import com.bridgeit.emailUtility.EmailVerification;
+import com.bridgeit.emailUtility.EmailUtility;
 import com.bridgeit.entity.Token;
 import com.bridgeit.entity.User;
 
@@ -20,9 +23,7 @@ public class UserServiceImpl implements UserService {
 
 	@Autowired
 	UserDao dao;
-	@Autowired
-	EmailVerification verifyEmail;
-
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -89,10 +90,11 @@ public class UserServiceImpl implements UserService {
 	 * mandatory step to verify mail of user attempting to register
 	 */
 	@Override
-	public void sendRegistrationVerificationLink(Integer id, String email) {
+	public void sendRegistrationVerificationLink(Integer id, String email)
+			throws FileNotFoundException, ClassNotFoundException, IOException {
 
 		String link = "http://localhost:8080/ToDo/register/verifyuser/" + id;
-		verifyEmail.sendMail("bridgeit@gmail.com", email, "Confirm Registration", link);
+		EmailUtility.sendMail(email, "Confirm Registration", link);
 
 	}
 
@@ -107,24 +109,25 @@ public class UserServiceImpl implements UserService {
 	 * mail, user is redirected to home page after both tokens match.
 	 */
 	@Override
-	public void sendLoginVerificationToken(User user, Token accessToken, HttpServletRequest request) {
+	public void sendLoginVerificationToken(User user, Token accessToken, HttpServletRequest request)
+			throws FileNotFoundException, ClassNotFoundException, IOException {
 		String subject = "Bridgelabz Secure Login Link";
 		String link = "http://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath()
 				+ request.getServletPath() + user.getId() + "/" + accessToken.getTokenValue();
 		System.out.println("link is: " + link);
 		String msg = "Dear " + user.getFirstName().toUpperCase() + ", Login from below secure link\n" + link + "";
-		verifyEmail.sendMail("bridgeit@gmail.com", user.getEmail(), subject, msg);
+		EmailUtility.sendMail(user.getEmail(), subject, msg);
 
 	}
 
 	@Override
-	public void sendResetPasswordMail(User user, HttpServletRequest request, Token token) {
+	public void sendResetPasswordMail(User user, HttpServletRequest request, Token token) throws FileNotFoundException, ClassNotFoundException, IOException {
 
 		String subject = "Bridgelabz Secure Login Link";
 		String link = request.getServerName() + ":" + request.getServerPort() + request.getContextPath()
 				+ "/login/resetpasswordtoken/" + user.getId() + "/" + token.getTokenValue();
 		String msg = "Dear " + user.getFirstName() + ", Access below link to reset password\n" + link + "";
-		verifyEmail.sendMail("bridgeit@gmail.com", user.getEmail(), subject, msg);
+		EmailUtility.sendMail(user.getEmail(), subject, msg);
 
 	}
 

@@ -24,8 +24,6 @@ public class FacebookLoginController {
 	@Autowired
 	UserService userService;
 	User user;
-	@Autowired
-	TokenGenerator generator;
 
 	@Autowired
 	FBConnection fbConnection;

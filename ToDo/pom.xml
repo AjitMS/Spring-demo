@@ -34,8 +34,6 @@
 			<version>20160810</version>
 		</dependency>
 
-
-
 		<!-- this dependency to recognize jsr310 else it does not recognize the 
 			DateTimeLocal(Java 8) -->
 		<dependency>
