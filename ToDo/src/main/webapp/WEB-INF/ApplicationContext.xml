@@ -71,7 +71,7 @@
 	<!-- Step 5: Add beans to enable Email Verification -->
 	<!--<bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl"> 
 		<property name="host" value="smtp.gmail.com" /> <property name="username" 
-		value="ajitshikalgar786@gmail.com" /> <property name="password" value="ajitms786" 
+		value="ajitshikalgar786@gmail.com" /> <property name="password" value="" 
 		/> <property name="javaMailProperties"> <props> <prop key="mail.smtp.auth">true</prop> 
 		<prop key="mail.smtp.socketFactory.port">465</prop> <prop key="mail.smtp.socketFactory.class">javax.net.ssl.SSLSocketFactory</prop> 
 		<prop key="mail.smtp.port">465</prop> </props> </property> </bean> -->
@@ -98,7 +98,10 @@
 	<!-- Add MVC Interceptors -->
 
 	<mvc:interceptors>
-			<bean id="loggerInterceptor" class="org.baeldung.web.interceptor.LoggerInterceptor" />
+		<mvc:interceptor>
+			<mvc:mapping path="/{uId}/homepage/**" />
+			<bean id="loggerInterceptor" class="com.bridgeit.filter.LoginInterceptor" />
+		</mvc:interceptor>
 	</mvc:interceptors>
 
 </beans>

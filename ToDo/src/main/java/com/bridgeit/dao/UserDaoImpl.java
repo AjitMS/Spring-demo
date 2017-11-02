@@ -27,6 +27,7 @@ public class UserDaoImpl implements UserDao {
 
 	public Integer registerUser(User user) {
 		logger.info("Session Factory: " + sessionFactory);
+		Integer id = null;
 		// hibernate code here
 
 		// open session
@@ -34,13 +35,14 @@ public class UserDaoImpl implements UserDao {
 		session = sessionFactory.getCurrentSession();
 
 		// store user
-		user.setPassword(encryption.encryptPassword(user.getPassword()));
-		logger.info("Encrypted password is: " + user.getPassword() + " length= " + user.getPassword().length());
+		if (user.getPassword() != null) {
+			user.setPassword(encryption.encryptPassword(user.getPassword()));
+			logger.info("Encrypted password is: " + user.getPassword() + " length= " + user.getPassword().length());
 
-		Integer id = (Integer) session.save(user);
-		if (id == -1)
-			return -1;
-
+			id = (Integer) session.save(user);
+			if (id == -1)
+				return -1;
+		}
 		// session.close();
 		// do not close session. spring does it for us automatically.
 		// no need to beginTransaction, or commit/roll_back manually
@@ -74,7 +76,7 @@ public class UserDaoImpl implements UserDao {
 		@SuppressWarnings("unchecked")
 		List<User> userList = session.createQuery("from User").getResultList();
 		password = encryption.encryptPassword(password);
-		logger.info("User entered password: "+ password);
+		logger.info("User entered password: " + password);
 		for (User tempUser : userList)
 			if (tempUser.getEmail().equals(email)) {
 				if (tempUser.getPassword().equals(password)) {

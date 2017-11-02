@@ -21,7 +21,7 @@ public class TokenGenerator {
 	Logger logger = Logger.getLogger(TokenGenerator.class);
 	Config config;
 	RedissonClient redisson;
-	RMapCache<String, Token> map;
+	RMapCache<String, Token> tokenMap;
 
 	@PostConstruct
 	public void initializeRedis() throws IOException {
@@ -44,7 +44,7 @@ public class TokenGenerator {
 
 		RedissonClient redisson = Redisson.create(config);
 
-		map = redisson.getMapCache("TestMap");
+		tokenMap = redisson.getMapCache("TestMap");
 
 	}
 
@@ -64,15 +64,15 @@ public class TokenGenerator {
 
 		switch (tokenType) {
 		case "accesstoken":
-			map.put(randomUUID, token, 24, TimeUnit.HOURS);
-			logger.info("Storing access Token as: " + map.get(randomUUID));
+			tokenMap.put(randomUUID, token, 24, TimeUnit.HOURS);
+			logger.info("Storing access Token as: " + tokenMap.get(randomUUID));
 			break;
 		case "refreshtoken":
-			map.put(randomUUID, token, 24, TimeUnit.HOURS);
-			logger.info("Storing refresh Token as:" + map.get(randomUUID));
+			tokenMap.put(randomUUID, token, 24, TimeUnit.HOURS);
+			logger.info("Storing refresh Token as:" + tokenMap.get(randomUUID));
 			break;
 		case "forgottoken":
-			map.put(randomUUID, token, 24, TimeUnit.HOURS);
+			tokenMap.put(randomUUID, token, 24, TimeUnit.HOURS);
 			break;
 		default:
 			logger.info("Invalid Choice");
@@ -88,22 +88,22 @@ public class TokenGenerator {
 
 	}
 
-	public boolean verifyUserToken(Integer userId, String userTokenId, String tokenType) {
+	public Integer verifyUserToken(String userTokenId) {
 
 		// check if tokenUUID exists
 
-		logger.info(tokenType + " Redis token is: " + map.get(userTokenId));
+		logger.info(" Redis token is: " + tokenMap.get(userTokenId));
 		logger.info("User token is: " + userTokenId);
-
+		Integer userId = null;
 		// verify token value, token user, and token type
 
-		if (map.containsKey(userTokenId) && map.get(userTokenId).getUserId().compareTo(userId) == 0
-				&& map.get(userTokenId).getTokenType().equalsIgnoreCase(tokenType)) {
-			logger.info(tokenType + " authentication success");
-			return true;
+		if (tokenMap.containsKey(userTokenId)) {
+			userId = tokenMap.get(userTokenId).getUserId();
+			logger.info("token authentication success with id: "+userId);
+			return userId;
 		}
-		logger.info(tokenType + " authentication failed");
-		return false;
+		logger.info(" authentication failed");
+		return -1;
 
 	}
 }

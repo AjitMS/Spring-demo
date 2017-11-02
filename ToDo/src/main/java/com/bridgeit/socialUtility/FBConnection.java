@@ -35,7 +35,7 @@ public class FBConnection {
 
 			fbLoginUrl = "http://www.facebook.com/dialog/oauth?" + "client_id=" + FBConnection.FB_APP_ID
 					+ "&redirect_uri=" + URLEncoder.encode(FBConnection.REDIRECT_URI, "UTF-8") + "&response_type=code"
-					+ "&scope=public_profile,email";
+					+ "&scope=email";
 
 		} catch (Exception e) {
 			e.printStackTrace();
